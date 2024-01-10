@@ -14,6 +14,8 @@ class USoundAttenuation;
 class USoundBase;
 class UAnimMontage;
 
+class IBaseMagazineInterface;
+
 UINTERFACE(MinimalAPI)
 class UBaseWeaponInterface : public UInterface { GENERATED_BODY() };
 
@@ -35,6 +37,8 @@ class FP_TP_API IBaseWeaponInterface{
 		virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) = 0;
 		virtual USoundAttenuation* GetWeaponFireSoundAttenuation(void) = 0;
 		virtual USoundBase* GetWeaponFireSound(void) = 0;
+		virtual const char* GetWeaponMagazineBoneName(void) = 0;
+		virtual UClass* GetWeaponMagazine(void) = 0;
 
 		// spesific of First Person and Third Person Animations
 		virtual UAnimMontage* GetWeaponInFPFireAnimation(void) = 0;

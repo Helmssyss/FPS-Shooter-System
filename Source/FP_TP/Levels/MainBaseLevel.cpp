@@ -47,23 +47,23 @@ void AMainBaseLevel::SetSpawnWeapon(const UFP_TPGameInstance* &gameInstance, APl
 			if (weapon) {
 				weapon->GetWeaponMesh()->AttachToComponent(spawnedSoldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FP_rightHand"));
 				spawnedSoldier->GetTPGunMesh()->SetSkeletalMesh(weapon->GetWeaponMeshObject());
+				spawnedSoldier->SetCurrentFPRightHandWeapon(weapon);
 				weapon->GetWeaponMesh()->SetCastShadow(false);
 				weapon->GetWeaponMesh()->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
 				weapon->GetWeaponMesh()->bOnlyOwnerSee = true;
-				spawnedSoldier->SetCurrentFPRightHandWeapon(weapon);
 			}
 			break;
 		}
 		case ESoldierClasses::SUPPORT: {
-			IBaseWeaponInterface* weapon = GetWorld()->SpawnActor<ARifleMAC11>(ARifleMAC11::StaticClass(), SpawnTransform, sParams);
-			if (weapon) {
-				weapon->GetWeaponMesh()->AttachToComponent(spawnedSoldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FP_rightHand"));
-				spawnedSoldier->GetTPGunMesh()->SetSkeletalMesh(weapon->GetWeaponMeshObject());
-				weapon->GetWeaponMesh()->SetCastShadow(false);
-				weapon->GetWeaponMesh()->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
-				weapon->GetWeaponMesh()->bOnlyOwnerSee = true;
-				spawnedSoldier->SetCurrentFPRightHandWeapon(weapon);
-			}
+			//IBaseWeaponInterface* weapon = GetWorld()->SpawnActor<ARifleMAC11>(ARifleMAC11::StaticClass(), SpawnTransform, sParams);
+			//if (weapon) {
+			//	weapon->GetWeaponMesh()->AttachToComponent(spawnedSoldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FP_rightHand"));
+			//	spawnedSoldier->GetTPGunMesh()->SetSkeletalMesh(weapon->GetWeaponMeshObject());
+			//	weapon->GetWeaponMesh()->SetCastShadow(false);
+			//	weapon->GetWeaponMesh()->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
+			//	weapon->GetWeaponMesh()->bOnlyOwnerSee = true;
+			//	spawnedSoldier->SetCurrentFPRightHandWeapon(weapon);
+			//}
 			break;
 		}
 

@@ -13,3 +13,8 @@ enum class EWeaponFireModes : uint8 {
 	SEMI_AUTO_MODE,
 	SINGLE_MODE
 };
+
+enum class EWeaponMagazineType : uint8 {
+	EMPTY,
+	FULL
+};

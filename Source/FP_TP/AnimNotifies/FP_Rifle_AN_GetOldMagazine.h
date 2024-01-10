@@ -7,7 +7,7 @@
 class ASoldier;
 
 UCLASS()
-class FP_TP_API UFP_Rifle_AnimNotifyOldMagazine : public UAnimNotify{
+class FP_TP_API UFP_Rifle_AnimNotifyGetOldMagazine : public UAnimNotify{
 	public:
 		virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 	

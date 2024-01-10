@@ -1,7 +1,8 @@
 #include "RifleAR4.h"
+#include "../Bullets/Bullet556.h"
+#include "Magazine_AR4.h"
 
 #include "Components/SkeletalMeshComponent.h"
-#include "../Bullets/Bullet556.h"
 #include "Particles/ParticleSystem.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -93,4 +94,9 @@ UAnimMontage* ARifleAR4::GetWeaponInTPReloadAnimation(void){
 
 UAnimMontage* ARifleAR4::GetWeaponInTPFireAnimation(void){
 	return  LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_RifleFire"));
+}
+
+UClass* ARifleAR4::GetWeaponMagazine(){
+	UClass* magazine = AMagazine_AR4::StaticClass();
+	return magazine;
 }

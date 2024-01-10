@@ -12,7 +12,7 @@ class UCurveFloat;
 class UAnimMontage;
 class UCameraShakeBase;
 class USoldierMenuWidget;
-
+class ABaseMagazine;
 class IBaseWeaponInterface;
 
 UCLASS()
@@ -24,6 +24,8 @@ class FP_TP_API ASoldier : public ACharacter{
 		FORCEINLINE USkeletalMeshComponent *GetFPArm() const { return FP_Arms; }
 		FORCEINLINE void SetCurrentFPRightHandWeapon(IBaseWeaponInterface* newWeapon) { currentRightHandWeapon = newWeapon; }
 		FORCEINLINE IBaseWeaponInterface *GetCurrentFPRightHandWeapon() const { return currentRightHandWeapon; }
+		FORCEINLINE void SetPreviousMagazineOwner(ABaseMagazine *magazine) { currentGetMagazineOwner = magazine; }
+		FORCEINLINE ABaseMagazine* GetPreviousMagazineOwner() { return currentGetMagazineOwner; }
 
 	private:
 		GENERATED_BODY()
@@ -116,6 +118,7 @@ class FP_TP_API ASoldier : public ACharacter{
 		bool bSprint;
 
 		IBaseWeaponInterface *currentRightHandWeapon;
+		ABaseMagazine* currentGetMagazineOwner;
 
 		FTimerHandle T_FP_ArmFireAnimationHandle;
 		FTimerHandle T_FireModeHandle;

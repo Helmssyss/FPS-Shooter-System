@@ -10,6 +10,9 @@ class USkeletalMesh;
 class UParticleSystem;
 class UTexture2D;
 class USoundAttenuation;
+class UStaticMeshComponent;
+class AMagazine_AR4;
+class IBaseMagazineInterface;
 
 UCLASS()
 class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
@@ -37,6 +40,8 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
 		virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
 		virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
+		virtual FORCEINLINE const char* GetWeaponMagazineBoneName() override { return "b_gun_mag"; }
+		virtual UClass* GetWeaponMagazine() override;
 
 	private:
 		GENERATED_BODY()
@@ -50,7 +55,7 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		UParticleSystem *MuzzleParticle;
 		UTexture2D *weaponTexture;
 		EWeaponFireModes FireMode;
-		short bulletShot = 25;
+		short bulletShot = 300;
 		short remainBullet;
 		short bulletInMag = 25;
 		short totalBullet = 20;

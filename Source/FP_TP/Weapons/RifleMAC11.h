@@ -12,33 +12,37 @@ class USkeletalMesh;
 class UParticleSystem;
 class USoundAttenuation;
 class USoundBase;
+class UStaticMeshComponent;
 
 UCLASS()
-class FP_TP_API ARifleMAC11 : public AActor, public IBaseWeaponInterface{
+class FP_TP_API ARifleMAC11 : public AActor{
 	public:	
 		ARifleMAC11();
-		virtual FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() override { return weaponMesh; }
-		virtual FORCEINLINE USkeletalMesh* GetWeaponMeshObject() override { return meshObject; }
-		virtual FORCEINLINE UParticleSystem* GetWeaponMuzzleParticle() override { return MuzzleParticle; }
-		virtual FORCEINLINE EWeaponFireModes GetCurrentWeaponFireMode() override { return FireMode; }
-		virtual FORCEINLINE void SetCurrentWeaponFireMode(EWeaponFireModes CurrentWeaponFireMode) override { FireMode = CurrentWeaponFireMode; }
-		virtual UClass* GetWeaponBulletClass() override { return this->StaticClass(); }
-		virtual void WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) override;
-		virtual FORCEINLINE short GetCurrentAmmo() override { return bulletShot; }
-		virtual FORCEINLINE short GetTotalAmmo() override { return totalBullet; }
-		virtual FORCEINLINE void SetCurrentAmmo(short BulletShot) override { bulletShot = BulletShot; }
-		virtual void ReloadWeapon() override;
-		virtual const char* GetWeaponName() override { return "MAC-11"; }
-		virtual FORCEINLINE FVector GetWeaponInFPLocation() override  { return FVector(); }
-		virtual FORCEINLINE FRotator GetWeaponInFPRotation() override { return FRotator(); }
-		virtual FORCEINLINE UTexture2D* GetWeaponTexture() override { return weaponTexture; }
-		virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) override;
-		virtual USoundAttenuation* GetWeaponFireSoundAttenuation() override;
-		virtual USoundBase* GetWeaponFireSound() override;
-		virtual UAnimMontage* GetWeaponInFPFireAnimation() override;
-		virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
-		virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
-		virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
+		//virtual FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() override { return weaponMesh; }
+		//virtual FORCEINLINE USkeletalMesh* GetWeaponMeshObject() override { return meshObject; }
+		//virtual FORCEINLINE UParticleSystem* GetWeaponMuzzleParticle() override { return MuzzleParticle; }
+		//virtual FORCEINLINE EWeaponFireModes GetCurrentWeaponFireMode() override { return FireMode; }
+		//virtual FORCEINLINE void SetCurrentWeaponFireMode(EWeaponFireModes CurrentWeaponFireMode) override { FireMode = CurrentWeaponFireMode; }
+		//virtual UClass* GetWeaponBulletClass() override { return this->StaticClass(); }
+		//virtual void WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) override;
+		//virtual FORCEINLINE short GetCurrentAmmo() override { return bulletShot; }
+		//virtual FORCEINLINE short GetTotalAmmo() override { return totalBullet; }
+		//virtual FORCEINLINE void SetCurrentAmmo(short BulletShot) override { bulletShot = BulletShot; }
+		//virtual void ReloadWeapon() override;
+		//virtual const char* GetWeaponName() override { return "MAC-11"; }
+		//virtual FORCEINLINE FVector GetWeaponInFPLocation() override  { return FVector(); }
+		//virtual FORCEINLINE FRotator GetWeaponInFPRotation() override { return FRotator(); }
+		//virtual FORCEINLINE UTexture2D* GetWeaponTexture() override { return weaponTexture; }
+		//virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) override;
+		//virtual USoundAttenuation* GetWeaponFireSoundAttenuation() override;
+		//virtual USoundBase* GetWeaponFireSound() override;
+		//virtual UAnimMontage* GetWeaponInFPFireAnimation() override;
+		//virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
+		//virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
+		//virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
+		//virtual FORCEINLINE const char* GetWeaponMagazineBoneName() override { return ""; }
+		//virtual UClass* GetWeaponMagazineUClass() override;
+		//virtual UStaticMeshComponent* GetWeaponMagazineMesh() override;
 
 	private:
 		GENERATED_BODY()
