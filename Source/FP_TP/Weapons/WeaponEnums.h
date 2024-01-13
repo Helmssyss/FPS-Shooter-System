@@ -1,5 +1,4 @@
 #pragma once
-
 #include "CoreMinimal.h"
 
 enum class EWeaponTypes : uint8 {

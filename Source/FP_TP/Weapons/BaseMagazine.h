@@ -6,6 +6,7 @@
 #include "WeaponEnums.h"
 #include "BaseMagazine.generated.h"
 
+class USoundBase;
 class UStaticMeshComponent;
 
 UCLASS()

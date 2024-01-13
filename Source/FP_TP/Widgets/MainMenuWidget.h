@@ -27,7 +27,13 @@ class FP_TP_API UMainMenuWidget : public UUserWidget{
 		void SelectSupportClass();
 
 		UFUNCTION()
-		void SelectReconClass();
+		void AR4Select();
+
+		UFUNCTION()
+		void AK47Select();
+
+		//UFUNCTION()
+		//void SelectReconClass();
 
 		UPROPERTY(meta = (BindWidget))
 		UButton *StartButton;
@@ -38,11 +44,18 @@ class FP_TP_API UMainMenuWidget : public UUserWidget{
 		UPROPERTY(meta = (BindWidget))
 		UButton* SelectSupportClassButton;
 
+		//UPROPERTY(meta = (BindWidget))
+		//UButton* SelectReconClassButton;
+
 		UPROPERTY(meta = (BindWidget))
-		UButton* SelectReconClassButton;
+		UButton *AR4_Select;
+
+		UPROPERTY(meta = (BindWidget))
+		UButton *AK47_Select;
 
 		ASoldier *Soldier;
 
+		ESoldierSelectWepon selectWeaponClass;
 		ESoldierClasses selectSoldierClass;
 		UFP_TPGameInstance *GameInstance;
 };

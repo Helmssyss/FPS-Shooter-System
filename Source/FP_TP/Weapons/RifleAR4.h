@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BaseWeaponInterface.h"
+#include "../Bullets/BulletsEnum.h"
 #include "RifleAR4.generated.h"
 
 class USkeletalMeshComponent;
@@ -42,6 +43,10 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
 		virtual FORCEINLINE const char* GetWeaponMagazineBoneName() override { return "b_gun_mag"; }
 		virtual UClass* GetWeaponMagazine() override;
+		virtual FORCEINLINE EBulletsEjectType GetEjectBulletType() override { return EBulletsEjectType::EJECT_556; }
+		virtual void SpawnEjectBullet() override;
+		virtual void PlayWeaponFireAnimation() override;
+		virtual FORCEINLINE void PlayWeaponShellSetupAnimation() override {}
 
 	private:
 		GENERATED_BODY()

@@ -4,14 +4,15 @@
 #include "GameFramework/Actor.h"
 #include "BaseMagazine.h"
 #include "WeaponEnums.h"
-#include "Magazine_AR4.generated.h"
+#include "Magazine_AK47.generated.h"
 
 class UStaticMeshComponent;
 
 UCLASS()
-class FP_TP_API AMagazine_AR4 : public ABaseMagazine {
+class FP_TP_API AMagazine_AK47 : public ABaseMagazine {
+
 	public:
-		AMagazine_AR4();
+		AMagazine_AK47();
 		virtual UStaticMeshComponent* GetMagazineMesh() override { return magazineMesh; }
 		virtual void SetMagazineMesh(EWeaponMagazineType magazineType) override;
 

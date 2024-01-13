@@ -19,7 +19,7 @@ ABullet556::ABullet556() {
 	const static ConstructorHelpers::FObjectFinder<UStaticMesh> BulletMesh(TEXT("/Game/Weapons/Meshes/Ammunition/SM_Shell_556x45"));
 	const static ConstructorHelpers::FObjectFinder<UParticleSystem> GetBulletTrail(TEXT("/Game/Weapons/FX/P_AssaultRifle_Tracer_01"));
 
-	bulletSphere = CreateDefaultSubobject<USphereComponent>(TEXT("7.62_Sphere"));
+	bulletSphere = CreateDefaultSubobject<USphereComponent>(TEXT("5.56_Sphere"));
 	bulletSphere->SetupAttachment(GetRootComponent());
 	bulletSphere->SetSphereRadius(2.0f);
 	bulletSphere->SetCollisionProfileName(FName("BlockAllDynamic"));
@@ -27,7 +27,7 @@ ABullet556::ABullet556() {
 	bulletSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	//bulletSphere->SetHiddenInGame(false);
 
-	bulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("7.62_Mesh"));
+	bulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("5.56_Mesh"));
 	bulletMesh->SetupAttachment(bulletSphere);
 	bulletMesh->SetStaticMesh(BulletMesh.Object);
 	bulletMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
@@ -35,13 +35,13 @@ ABullet556::ABullet556() {
 	bulletMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	bulletMesh->SetCastShadow(false);
 
-	bulletTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("7.62_Trail"));
+	bulletTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("5.56_Trail"));
 	bulletTrail->SetupAttachment(bulletMesh);
 	bulletTrail->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	bulletTrail->SetRelativeScale3D(FVector(0.39, 0.3, 0.3));
 	bulletTrail->SetTemplate(GetBulletTrail.Object);
 
-	bulletProjectile = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("7.62_Projectile"));
+	bulletProjectile = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("5.56_Projectile"));
 	bulletProjectile->SetUpdatedComponent(GetRootComponent());
 	bulletProjectile->InitialSpeed = 10500;
 	bulletProjectile->MaxSpeed = 10500;
@@ -82,6 +82,9 @@ void ABullet556::BulletImpactParticle(UPrimitiveComponent* OtherComp, const FHit
 				USoundAttenuation* ImpactSoundAttenuation = LoadObject<USoundAttenuation>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Attenuation/ProjectileImpact_att"));
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ImpactEmitterSound, Hit.ImpactPoint, FRotator::ZeroRotator, 1, 1, 0, ImpactSoundAttenuation);
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particle, SpawnTransform);
+				UMaterialInterface *BulletHoleDecalMaterial = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr,TEXT("/Game/M_BulletHole_Material")));
+				if(BulletHoleDecalMaterial)
+					UGameplayStatics::SpawnDecalAttached(BulletHoleDecalMaterial, FVector(10, 10, 10), OtherComp, NAME_None, Hit.Location, FRotationMatrix::MakeFromX(Hit.Normal).Rotator(), EAttachLocation::KeepWorldPosition, 10);
 				break;
 			}
 			

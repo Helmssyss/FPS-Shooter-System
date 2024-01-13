@@ -13,6 +13,8 @@ class FP_TP_API UFP_TPGameInstance : public UGameInstance{
 		float SoldierSpeed;
 		UClass *SoldierStaticClass;
 		ESoldierClasses selectSoldierClass;
+		ESoldierSelectWepon selectWeaponClass;
+
 	private:
 		GENERATED_BODY()
 };

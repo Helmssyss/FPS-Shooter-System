@@ -5,14 +5,14 @@
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Weapons/RifleAR4.h"
 #include "../Weapons/RifleMAC11.h"
+#include "../Weapons/RifleAK.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 #define  printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 30, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
-AMainBaseLevel::AMainBaseLevel(){
-}
+AMainBaseLevel::AMainBaseLevel(){}
 
 void AMainBaseLevel::BeginPlay(){
 	Super::BeginPlay();
@@ -43,7 +43,12 @@ void AMainBaseLevel::SetSpawnWeapon(const UFP_TPGameInstance* &gameInstance, APl
 
 	switch (gameInstance->selectSoldierClass) {
 		case ESoldierClasses::ASSAULT:{
-			IBaseWeaponInterface* weapon = GetWorld()->SpawnActor<ARifleAR4>(ARifleAR4::StaticClass(), SpawnTransform, sParams);
+			if (gameInstance->selectWeaponClass == ESoldierSelectWepon::WEAPON_AR4)
+				weapon = GetWorld()->SpawnActor<ARifleAR4>(ARifleAR4::StaticClass(), SpawnTransform, sParams);
+
+			else if (gameInstance->selectWeaponClass == ESoldierSelectWepon::WEAPON_AK47)
+				weapon = GetWorld()->SpawnActor<ARifleAK>(ARifleAK::StaticClass(), SpawnTransform, sParams);
+
 			if (weapon) {
 				weapon->GetWeaponMesh()->AttachToComponent(spawnedSoldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FP_rightHand"));
 				spawnedSoldier->GetTPGunMesh()->SetSkeletalMesh(weapon->GetWeaponMeshObject());

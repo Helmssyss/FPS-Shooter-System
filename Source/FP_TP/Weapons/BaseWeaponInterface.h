@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "WeaponEnums.h"
+#include "../Bullets/BulletsEnum.h"
 #include "BaseWeaponInterface.generated.h"
 
 class UAnimationAsset;
@@ -37,16 +38,18 @@ class FP_TP_API IBaseWeaponInterface{
 		virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) = 0;
 		virtual USoundAttenuation* GetWeaponFireSoundAttenuation(void) = 0;
 		virtual USoundBase* GetWeaponFireSound(void) = 0;
-		virtual const char* GetWeaponMagazineBoneName(void) = 0;
-		virtual UClass* GetWeaponMagazine(void) = 0;
-
-		// spesific of First Person and Third Person Animations
 		virtual UAnimMontage* GetWeaponInFPFireAnimation(void) = 0;
 		virtual UAnimMontage* GetWeaponInFPReloadAnimation(void) = 0;
 		virtual UAnimMontage* GetWeaponInTPReloadAnimation(void) = 0;
 		virtual UAnimMontage* GetWeaponInTPFireAnimation(void) = 0;
 		virtual FVector GetWeaponInFPLocation(void) = 0;
 		virtual FRotator GetWeaponInFPRotation(void) = 0;
+		virtual const char* GetWeaponMagazineBoneName(void) = 0;
+		virtual UClass* GetWeaponMagazine(void) = 0;
+		virtual EBulletsEjectType GetEjectBulletType(void) = 0;
+		virtual void SpawnEjectBullet(void) = 0;
+		virtual void PlayWeaponFireAnimation(void) = 0;
+		virtual void PlayWeaponShellSetupAnimation(void) = 0;
 
 	private:
 		GENERATED_BODY()

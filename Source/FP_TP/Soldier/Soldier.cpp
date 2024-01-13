@@ -300,17 +300,17 @@ void ASoldier::OnFire(){
 				switch (currentRightHandWeapon->GetCurrentWeaponFireMode()) {
 					case EWeaponFireModes::AUTO_MODE: {
 						RecoilStart();
-						GetWorldTimerManager().SetTimer(T_FireModeHandle, this, &ASoldier::ShootFire, 0.107f, true);
+						GetWorldTimerManager().SetTimer(T_FireModeHandle, this, &ASoldier::ShootFire, 0.127f, true);
 						break;
 					}
 					case EWeaponFireModes::SEMI_AUTO_MODE: {
 						RecoilStart();
-						GetWorldTimerManager().SetTimer(T_FireModeHandle, this, &ASoldier::SetSemiAutoFire, 0.1f, true);
+						GetWorldTimerManager().SetTimer(T_FireModeHandle, this, &ASoldier::SetSemiAutoFire, 0.127f, true);
 						break;
 					}
 					case EWeaponFireModes::SINGLE_MODE: {
 						RecoilStart();
-						GetWorldTimerManager().SetTimer(T_FireModeHandle, this, &ASoldier::ShootFire, 0.1f, false);
+						GetWorldTimerManager().SetTimer(T_FireModeHandle, this, &ASoldier::ShootFire, 0.127f, false);
 						break;
 					}
 			}
@@ -345,7 +345,7 @@ void ASoldier::ShootFire() {
 			const FVector selectVector = SelectVector(ResultHit.ImpactPoint, ResultHit.TraceEnd, trace);
 			const FRotator lookAtRot = FindLookAtRotation(currentRightHandWeapon->GetWeaponMesh()->GetSocketLocation(FName("Muzzle")), selectVector);
 			const FRotator makeRotator = FRotator(lookAtRot.Pitch + 0.3, lookAtRot.Yaw, lookAtRot.Roll);
-			//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 4);
+			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 4);
 			const FTransform makeTransform = FTransform(makeRotator, currentRightHandWeapon->GetWeaponMesh()->GetSocketLocation(FName("Muzzle")), FVector(1.7, 1.7, 1.7));
 			FActorSpawnParameters params;
 			params.Instigator = this;
@@ -364,8 +364,9 @@ void ASoldier::ShootFire() {
 				UGameplayStatics::SpawnEmitterAttached(currentRightHandWeapon->GetWeaponMuzzleParticle(), currentRightHandWeapon->GetWeaponMesh(), "Muzzle",
 					muzzleSocketTransform.GetLocation(), FP_Camera->GetComponentRotation(), FVector(1, 1, 1), EAttachLocation::Type::KeepWorldPosition);
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), currentRightHandWeapon->GetWeaponFireSound(), GetActorLocation(), 1, 1, 0, currentRightHandWeapon->GetWeaponFireSoundAttenuation());
+				currentRightHandWeapon->PlayWeaponFireAnimation();
 			}
-			//DrawDebugBox(GetWorld(), ResultHit.ImpactPoint, FVector(3, 3, 3), FColor::Red, false, 3.f);
+			DrawDebugBox(GetWorld(), ResultHit.ImpactPoint, FVector(3, 3, 3), FColor::Red, false, 3.f);
 		}
 		else {
 			OnFireReleased();

@@ -1,6 +1,7 @@
 #include "RifleAR4.h"
 #include "../Bullets/Bullet556.h"
 #include "Magazine_AR4.h"
+#include "../Bullets/EjectBullet.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Particles/ParticleSystem.h"
@@ -17,10 +18,11 @@ ARifleAR4::ARifleAR4(){
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("AR4_Mesh"));
 	weaponMesh->SetupAttachment(GetRootComponent());
 	weaponMesh->SetSkeletalMesh(WeaponMesh.Object);
-	
+
 	meshObject = WeaponMesh.Object;
 	MuzzleParticle = WeaponMuzzle.Object;
 	weaponTexture = WeaponTexture.Object;
+
 }
 
 void ARifleAR4::BeginPlay(){
@@ -37,8 +39,8 @@ UClass* ARifleAR4::GetWeaponBulletClass() {
 
 void ARifleAR4::WeaponSpreadSize(FVector &Trace, bool bSoldierAimDownSight){
 	if (!bSoldierAimDownSight) {
-		Trace.Y += Trace.Y * FMath::RandRange(0.20f, -0.10f);
-		Trace.Z += Trace.Z * FMath::RandRange(-0.20f, 0.20f);
+		Trace.Y += Trace.Y * FMath::RandRange(0.20f, -0.20f);
+		Trace.Z += Trace.Z * FMath::RandRange(0.20f, -0.20f);
 	}else {
 		Trace.Y += Trace.Y * FMath::RandRange(0.0f, 0.01f);
 		Trace.Z += Trace.Z * FMath::RandRange(0.0f, 0.01f);
@@ -85,7 +87,7 @@ UAnimMontage* ARifleAR4::GetWeaponInFPFireAnimation(){
 }
 
 UAnimMontage* ARifleAR4::GetWeaponInFPReloadAnimation(void){
-	return LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_RifleReload"));
+	return LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_RifleReload_AR4"));
 }
 
 UAnimMontage* ARifleAR4::GetWeaponInTPReloadAnimation(void){
@@ -99,4 +101,19 @@ UAnimMontage* ARifleAR4::GetWeaponInTPFireAnimation(void){
 UClass* ARifleAR4::GetWeaponMagazine(){
 	UClass* magazine = AMagazine_AR4::StaticClass();
 	return magazine;
+}
+
+void ARifleAR4::SpawnEjectBullet(){
+	FActorSpawnParameters params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const FTransform makeTransform = FTransform(GetWeaponMesh()->GetSocketRotation("ejectBullet"), GetWeaponMesh()->GetSocketLocation("ejectBullet"), FVector(1, 1, 1));
+	AEjectBullet* EjectSpawnBullet = GetWorld()->SpawnActor<AEjectBullet>(AEjectBullet::StaticClass(), makeTransform, params);
+	if (EjectSpawnBullet) {
+		EjectSpawnBullet->SetEjectBulletMesh(GetEjectBulletType());
+		EjectSpawnBullet->SetLifeSpan(3);
+	}
+}
+
+void ARifleAR4::PlayWeaponFireAnimation(){
+	weaponMesh->PlayAnimation(LoadObject<UAnimationAsset>(nullptr,TEXT("/Game/Weapons/Animation/AR4_Fire")), false);
 }

@@ -8,6 +8,7 @@ class UFP_TPGameInstance;
 class ASoldier;
 class APlayerController;
 class USkeletalMeshComponent;
+class IBaseWeaponInterface;
 
 UCLASS()
 class FP_TP_API AMainBaseLevel : public ALevelScriptActor{
@@ -22,5 +23,6 @@ class FP_TP_API AMainBaseLevel : public ALevelScriptActor{
 
 		ASoldier* spawnedSoldier;
 		USkeletalMeshComponent *weaponMesh;
+		IBaseWeaponInterface *weapon;
 	
 };

@@ -1,8 +1,8 @@
-#include "Magazine_AR4.h"
+#include "Magazine_AK47.h"
 
 #define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 3, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
-AMagazine_AR4::AMagazine_AR4(){
+AMagazine_AK47::AMagazine_AK47() {
 	PrimaryActorTick.bCanEverTick = false;
 	magazineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magazineAR4"));
 	magazineMesh->SetupAttachment(GetRootComponent());
@@ -20,17 +20,17 @@ AMagazine_AR4::AMagazine_AR4(){
 	magazineMesh->SetCollisionResponseToChannels(CollisionResponseContainer);
 }
 
-void AMagazine_AR4::SetMagazineMesh(EWeaponMagazineType magazineType){
-	switch (magazineType){
-		case EWeaponMagazineType::EMPTY:{
-			magazineMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/AR4/SM_AR4_Mag_Empty")));
-			break;
-		}
-		case EWeaponMagazineType::FULL: {
-			magazineMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/AR4/SM_AR4_Mag")));
-			break;
-		}
-		default:
-			break;
+void AMagazine_AK47::SetMagazineMesh(EWeaponMagazineType magazineType) {
+	switch (magazineType) {
+	case EWeaponMagazineType::EMPTY: {
+		magazineMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Ka47/SM_KA47_Mag_Empty")));
+		break;
+	}
+	case EWeaponMagazineType::FULL: {
+		magazineMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Ka47/SM_KA47_Mag")));
+		break;
+	}
+	default:
+		break;
 	}
 }

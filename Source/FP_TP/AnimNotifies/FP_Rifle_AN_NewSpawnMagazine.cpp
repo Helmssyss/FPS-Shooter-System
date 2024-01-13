@@ -2,7 +2,7 @@
 #include "../Soldier/Soldier.h"
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Weapons/BaseMagazine.h"
-
+#include "Kismet/GameplayStatics.h"
 
 void UFP_Rifle_AN_NewSpawnMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
 	Super::Notify(MeshComp, Animation);
@@ -19,6 +19,7 @@ void UFP_Rifle_AN_NewSpawnMagazine::Notify(USkeletalMeshComponent* MeshComp, UAn
 			magazine->GetMagazineMesh()->GetOwner()->SetOwner(Soldier->GetFPArm()->GetOwner());
 			magazine->GetMagazineMesh()->SetCastShadow(false);
 			magazine->GetMagazineMesh()->bOnlyOwnerSee = true;
+			UGameplayStatics::PlaySound2D(MeshComp->GetOwner()->GetWorld(), LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/Rifle_AmmoPickup")));
 		}
 	}
 }
