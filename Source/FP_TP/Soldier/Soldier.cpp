@@ -2,7 +2,7 @@
 #include "../FP_TPGameModeBase.h"
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Bullets/BaseBulletInterface.h"
-#include "../Widgets/SoldierMenuWidget.h"
+#include "../Widgets/SoldierInterfaceWidget.h"
 
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraShakeBase.h"
@@ -33,8 +33,8 @@ ASoldier::ASoldier(){
 	const static ConstructorHelpers::FObjectFinder<UCurveFloat> GetRECOIL_PITCH_Curve(TEXT("/Game/Blueprint/RECOIL_PITCH_Curve"));
 	const static ConstructorHelpers::FObjectFinder<UCurveFloat> GetRECOIL_YAW_Curve(TEXT("/Game/Blueprint/RECOIL_YAW_Curve"));
 	const static ConstructorHelpers::FClassFinder<UCameraShakeBase> FireCameraShake(TEXT("/Game/Blueprint/FireCameraShake"));
-	const static ConstructorHelpers::FClassFinder<UUserWidget> GetSoldierMenuWidget(TEXT("/Game/Widgets/BP_SoldierMenuWidget"));
-	
+	const static ConstructorHelpers::FClassFinder<UUserWidget> GetSoldierInterfaceWidget(TEXT("/Game/Widgets/BP_SoldierInterfaceWidget"));
+
 	GetMesh()->SetAnimClass(TP_BodyAnimClass.Object->GeneratedClass);
 	GetMesh()->SetSkeletalMesh(BodyMesh.Object);
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.f, 0.0f));
@@ -92,11 +92,12 @@ ASoldier::ASoldier(){
 	YawCurve = GetRECOIL_YAW_Curve.Object;
 
 	TCameraShake = FireCameraShake.Class;
-	TSoldierMenuWidget = GetSoldierMenuWidget.Class;
+	TSoldierInterfaceWidget = GetSoldierInterfaceWidget.Class;
 }
 
 void ASoldier::BeginPlay(){
 	Super::BeginPlay();
+
 	if (ADS_Curve) {
 		FOnTimelineFloat ADS_ProgressUpdate;
 		FOnTimelineEvent ADS_FinishEvent;
@@ -120,8 +121,8 @@ void ASoldier::BeginPlay(){
 		RecoilTimeline.AddInterpFloat(YawCurve, YawCurveFloat);
 	}
 
-	SoldierMenuWidget = CreateWidget<USoldierMenuWidget>(this->GetWorld()->GetFirstPlayerController(), TSoldierMenuWidget);
-	SoldierMenuWidget->AddToViewport();
+	SoldierInterfaceWidget = CreateWidget<USoldierInterfaceWidget>(GetWorld()->GetFirstPlayerController(), TSoldierInterfaceWidget);
+	SoldierInterfaceWidget->AddToViewport();
 }
 
 void ASoldier::Tick(float DeltaTime) {
@@ -288,8 +289,8 @@ void ASoldier::FireMode() {
 				printf(FColor::Red, "SINGLE_MODE");
 				break;
 		}
-		SoldierMenuWidget->RemoveFromParent();
-		SoldierMenuWidget->AddToViewport();
+		SoldierInterfaceWidget->RemoveFromParent();
+		SoldierInterfaceWidget->AddToViewport();
 	}
 }
 
@@ -359,7 +360,7 @@ void ASoldier::ShootFire() {
 				FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPFireAnimation());
 				GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPFireAnimation());
 
-				UGameplayStatics::PlayWorldCameraShake(GetWorld(), TCameraShake, GetActorLocation(), 900000, 0);
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), TCameraShake, GetActorLocation(), 80, 0);
 
 				UGameplayStatics::SpawnEmitterAttached(currentRightHandWeapon->GetWeaponMuzzleParticle(), currentRightHandWeapon->GetWeaponMesh(), "Muzzle",
 					muzzleSocketTransform.GetLocation(), FP_Camera->GetComponentRotation(), FVector(1, 1, 1), EAttachLocation::Type::KeepWorldPosition);

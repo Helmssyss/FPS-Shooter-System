@@ -20,6 +20,7 @@ void UFP_Rifle_AN_PlugMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 				magazine->GetOwner()->SetOwner(Soldier->GetPreviousMagazineOwner());
 				UGameplayStatics::PlaySound2D(MeshComp->GetOwner()->GetWorld(), LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/Rifle_Reload_Insert")));
 				magazine->Destroy();
+				Soldier->GetCurrentFPRightHandWeapon()->ReloadWeapon();
 			}
 		}
 	}

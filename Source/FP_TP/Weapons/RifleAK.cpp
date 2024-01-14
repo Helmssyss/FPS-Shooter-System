@@ -109,7 +109,6 @@ void ARifleAK::SpawnEjectBullet() {
 	const FTransform makeTransform = FTransform(GetWeaponMesh()->GetSocketRotation("ejectBullet"), GetWeaponMesh()->GetSocketLocation("ejectBullet"), FVector(1, 1, 1));
 	AEjectBullet* EjectSpawnBullet = GetWorld()->SpawnActor<AEjectBullet>(AEjectBullet::StaticClass(), makeTransform, params);
 	if (EjectSpawnBullet) {
-		printf(FColor::Cyan, "AK EJECT");
 		EjectSpawnBullet->SetEjectBulletMesh(GetEjectBulletType());
 		EjectSpawnBullet->SetLifeSpan(3);
 	}

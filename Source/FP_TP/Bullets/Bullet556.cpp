@@ -77,7 +77,6 @@ void ABullet556::BulletImpactParticle(UPrimitiveComponent* OtherComp, const FHit
 		const UPhysicalMaterial* GetPhysicalMaterial = MaterialInterface->GetPhysicalMaterial();
 		switch (GetPhysicalMaterial->SurfaceType) {
 			case EPhysicalSurface::SurfaceType1:{
-				printf(FColor::Red, "SurfaceType1");
 				USoundBase* ImpactEmitterSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/Rifle_ImpactSurface_Cue"));
 				USoundAttenuation* ImpactSoundAttenuation = LoadObject<USoundAttenuation>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Attenuation/ProjectileImpact_att"));
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ImpactEmitterSound, Hit.ImpactPoint, FRotator::ZeroRotator, 1, 1, 0, ImpactSoundAttenuation);
@@ -95,7 +94,6 @@ void ABullet556::BulletImpactParticle(UPrimitiveComponent* OtherComp, const FHit
 				//UGameplayStatics::SpawnEmitterAtLocation();
 				break;
 			default: {
-				printf(FColor::Red, "SurfaceType1");
 				USoundBase* ImpactEmitterSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/Rifle_ImpactSurface_Cue"));
 				USoundAttenuation* ImpactSoundAttenuation = LoadObject<USoundAttenuation>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Attenuation/ProjectileImpact_att"));
 				UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ImpactEmitterSound, Hit.ImpactPoint, FRotator::ZeroRotator, 1, 1, 0, ImpactSoundAttenuation);

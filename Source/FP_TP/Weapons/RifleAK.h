@@ -61,8 +61,8 @@ class FP_TP_API ARifleAK : public AActor, public IBaseWeaponInterface{
 		UParticleSystem* MuzzleParticle;
 		UTexture2D* weaponTexture;
 		EWeaponFireModes FireMode;
-		short bulletShot = 300;
+		short bulletShot = 52;
+		short bulletInMag = 52;
+		short totalBullet = 100;
 		short remainBullet;
-		short bulletInMag = 25;
-		short totalBullet = 20;
 };

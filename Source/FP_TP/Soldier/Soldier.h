@@ -11,7 +11,7 @@ class USkeletalMeshComponent;
 class UCurveFloat;
 class UAnimMontage;
 class UCameraShakeBase;
-class USoldierMenuWidget;
+class USoldierInterfaceWidget;
 class ABaseMagazine;
 class IBaseWeaponInterface;
 
@@ -84,7 +84,10 @@ class FP_TP_API ASoldier : public ACharacter{
 		USkeletalMeshComponent* TP_Gun;
 
 		UPROPERTY()
-		USoldierMenuWidget* SoldierMenuWidget;
+		USoldierInterfaceWidget* SoldierInterfaceWidget;
+
+		UPROPERTY(EditAnywhere, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<USoldierInterfaceWidget> TSoldierInterfaceWidget;
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		UCurveFloat* PitchCurve;
@@ -127,5 +130,4 @@ class FP_TP_API ASoldier : public ACharacter{
 		uint8 SemiAutoFireCount = 0;
 
 		TSubclassOf<UCameraShakeBase> TCameraShake;
-		TSubclassOf<USoldierMenuWidget> TSoldierMenuWidget;
 };

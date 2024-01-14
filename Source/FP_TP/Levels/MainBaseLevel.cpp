@@ -16,27 +16,26 @@ AMainBaseLevel::AMainBaseLevel(){}
 
 void AMainBaseLevel::BeginPlay(){
 	Super::BeginPlay();
-	const UFP_TPGameInstance *GameInstance = Cast<UFP_TPGameInstance>(GetGameInstance());
+	UFP_TPGameInstance *GameInstance = Cast<UFP_TPGameInstance>(GetGameInstance());
 	if (GameInstance) {
 		FActorSpawnParameters sParams;
 		sParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		const FTransform SpawnTransform(FRotator::ZeroRotator, FVector(-1601.019287, -861.003052, 300.603363), FVector(1, 1, 1));
 		spawnedSoldier = GetWorld()->SpawnActor<ASoldier>(GameInstance->SoldierStaticClass, SpawnTransform, sParams);
 		if (spawnedSoldier){
-			spawnedSoldier->GetCharacterMovement()->MaxWalkSpeed = GameInstance->SoldierSpeed;
 			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString("KARAKTER DOGDU"));
 			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-
 			if (PlayerController) {
 				PlayerController->Possess(spawnedSoldier);
 				SetSpawnWeapon(GameInstance, PlayerController);
 			}
+			GameInstance->SoldierRef = spawnedSoldier;
 			printf(FColor::Red,"SelectSoldierClass -> %i" ,GameInstance->selectSoldierClass);
 		}
 	}
 }
 
-void AMainBaseLevel::SetSpawnWeapon(const UFP_TPGameInstance* &gameInstance, APlayerController* &playerController){
+void AMainBaseLevel::SetSpawnWeapon(UFP_TPGameInstance* &gameInstance, APlayerController* &playerController){
 	const FTransform SpawnTransform(FRotator::ZeroRotator, FVector(-1601.019287, -861.003052, 300.603363), FVector(1, 1, 1));
 	FActorSpawnParameters sParams;
 	sParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -60,15 +59,6 @@ void AMainBaseLevel::SetSpawnWeapon(const UFP_TPGameInstance* &gameInstance, APl
 			break;
 		}
 		case ESoldierClasses::SUPPORT: {
-			//IBaseWeaponInterface* weapon = GetWorld()->SpawnActor<ARifleMAC11>(ARifleMAC11::StaticClass(), SpawnTransform, sParams);
-			//if (weapon) {
-			//	weapon->GetWeaponMesh()->AttachToComponent(spawnedSoldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FP_rightHand"));
-			//	spawnedSoldier->GetTPGunMesh()->SetSkeletalMesh(weapon->GetWeaponMeshObject());
-			//	weapon->GetWeaponMesh()->SetCastShadow(false);
-			//	weapon->GetWeaponMesh()->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
-			//	weapon->GetWeaponMesh()->bOnlyOwnerSee = true;
-			//	spawnedSoldier->SetCurrentFPRightHandWeapon(weapon);
-			//}
 			break;
 		}
 

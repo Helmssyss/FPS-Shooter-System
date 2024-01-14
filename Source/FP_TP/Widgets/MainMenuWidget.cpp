@@ -5,31 +5,20 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 
-void UMainMenuWidget::NativeConstruct(){
-	Super::NativeConstruct();
+void UMainMenuWidget::NativeOnInitialized(){
+	Super::NativeOnInitialized();
+	GameInstance = Cast<UFP_TPGameInstance>(GetGameInstance());
+
 	StartButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainBaseLevel);
 	SelectAssaultClassButton->OnClicked.AddDynamic(this, &UMainMenuWidget::SelectAssaultClass);
 	SelectSupportClassButton->OnClicked.AddDynamic(this, &UMainMenuWidget::SelectSupportClass);
 	AK47_Select->OnClicked.AddDynamic(this, &UMainMenuWidget::AK47Select);
 	AR4_Select->OnClicked.AddDynamic(this, &UMainMenuWidget::AR4Select);
-	//SelectReconClassButton->OnClicked.AddDynamic(this, &UMainMenuWidget::SelectReconClass);
-
-	Soldier = Cast<ASoldier>(GetOwningPlayerPawn());
-	GameInstance = Cast<UFP_TPGameInstance>(GetGameInstance());
-
-	if (Soldier) {
-		APlayerController* controller = Cast<APlayerController>(Soldier->GetController());
-
-		FInputModeGameOnly InputMode;
-		controller->SetInputMode(InputMode);
-		controller->bShowMouseCursor = true;
-	}
 }
 
 void UMainMenuWidget::OpenMainBaseLevel(){
 	if (GameInstance) {
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString("GAMEINSTANCE GELDI"));
-		GameInstance->SoldierStaticClass = Soldier->StaticClass();
+		GameInstance->SoldierStaticClass = ASoldier::StaticClass();
 		GameInstance->selectSoldierClass = selectSoldierClass;
 		GameInstance->selectWeaponClass = selectWeaponClass;
 		UGameplayStatics::OpenLevel(GetWorld(), FName("MainMap"));

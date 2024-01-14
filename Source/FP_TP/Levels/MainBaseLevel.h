@@ -19,7 +19,7 @@ class FP_TP_API AMainBaseLevel : public ALevelScriptActor{
 		GENERATED_BODY()
 		virtual void BeginPlay() override;
 		
-		void SetSpawnWeapon(const UFP_TPGameInstance* &gameInstance, APlayerController* &playerController);
+		void SetSpawnWeapon(UFP_TPGameInstance* &gameInstance, APlayerController* &playerController);
 
 		ASoldier* spawnedSoldier;
 		USkeletalMeshComponent *weaponMesh;

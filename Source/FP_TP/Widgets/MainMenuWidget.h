@@ -5,15 +5,14 @@
 #include "WidgetEnums.h"
 #include "MainMenuWidget.generated.h"
 
-class ASoldier;
-
 class UButton;
 class UFP_TPGameInstance;
 
 UCLASS()
 class FP_TP_API UMainMenuWidget : public UUserWidget{
 	public:
-		virtual void NativeConstruct() override;
+		virtual void NativeOnInitialized() override;
+
 	private:
 		GENERATED_BODY()
 
@@ -52,8 +51,6 @@ class FP_TP_API UMainMenuWidget : public UUserWidget{
 
 		UPROPERTY(meta = (BindWidget))
 		UButton *AK47_Select;
-
-		ASoldier *Soldier;
 
 		ESoldierSelectWepon selectWeaponClass;
 		ESoldierClasses selectSoldierClass;

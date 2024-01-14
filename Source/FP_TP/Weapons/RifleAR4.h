@@ -60,8 +60,8 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		UParticleSystem *MuzzleParticle;
 		UTexture2D *weaponTexture;
 		EWeaponFireModes FireMode;
-		short bulletShot = 300;
+		short bulletShot = 35;
+		short bulletInMag = 35;
+		short totalBullet = 120;
 		short remainBullet;
-		short bulletInMag = 25;
-		short totalBullet = 20;
 };
