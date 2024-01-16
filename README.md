@@ -15,7 +15,7 @@
   - [x] Weapon Spread
 
 ### TO:DO
-  - [] Weapon Clipping
+  - [ ] Weapon Clipping
 
 ### Note:
 *  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
