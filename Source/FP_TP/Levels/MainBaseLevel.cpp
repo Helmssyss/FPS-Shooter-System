@@ -52,9 +52,18 @@ void AMainBaseLevel::SetSpawnWeapon(UFP_TPGameInstance* &gameInstance, APlayerCo
 				weapon->GetWeaponMesh()->AttachToComponent(spawnedSoldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FP_rightHand"));
 				spawnedSoldier->GetTPGunMesh()->SetSkeletalMesh(weapon->GetWeaponMeshObject());
 				spawnedSoldier->SetCurrentFPRightHandWeapon(weapon);
+				
 				weapon->GetWeaponMesh()->SetCastShadow(false);
 				weapon->GetWeaponMesh()->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
 				weapon->GetWeaponMesh()->bOnlyOwnerSee = true;
+				
+				weapon->GetWeaponCustomizeSight()->bOnlyOwnerSee = true;
+				weapon->GetWeaponCustomizeMuzzle()->bOnlyOwnerSee = true;
+				weapon->GetWeaponCustomizeGrip()->bOnlyOwnerSee = true;
+
+				weapon->GetWeaponCustomizeSight()->SetCastShadow(false);
+				weapon->GetWeaponCustomizeMuzzle()->SetCastShadow(false);
+				weapon->GetWeaponCustomizeGrip()->SetCastShadow(false);
 			}
 			break;
 		}

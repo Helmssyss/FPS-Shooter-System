@@ -19,10 +19,21 @@ ARifleAR4::ARifleAR4(){
 	weaponMesh->SetupAttachment(GetRootComponent());
 	weaponMesh->SetSkeletalMesh(WeaponMesh.Object);
 
+	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_SightMesh"));
+	sightMesh->SetupAttachment(weaponMesh, FName("Sight"));
+	sightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_MuzzleMesh"));
+	muzzleMesh->SetupAttachment(weaponMesh, FName("Muzzle"));
+	muzzleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_GripMesh"));
+	gripMesh->SetupAttachment(weaponMesh, FName("Grip"));
+	gripMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	meshObject = WeaponMesh.Object;
 	MuzzleParticle = WeaponMuzzle.Object;
 	weaponTexture = WeaponTexture.Object;
-
 }
 
 void ARifleAR4::BeginPlay(){
@@ -50,12 +61,28 @@ void ARifleAR4::WeaponSpreadSize(FVector &Trace, bool bSoldierAimDownSight){
 void ARifleAR4::ReloadWeapon(){
 	if (bulletShot < bulletInMag) {
 		const short missingBullet = bulletInMag - bulletShot;
-		const short eklenecekMermi = FMath::Min<short>(missingBullet, totalBullet);
+		const short willAddBullet = FMath::Min<short>(missingBullet, totalBullet);
 
-		bulletShot += eklenecekMermi;
-		totalBullet -= eklenecekMermi;
+		bulletShot += willAddBullet;
+		totalBullet -= willAddBullet;
 		remainBullet = bulletShot;
 	}
+}
+
+FVector ARifleAR4::GetWeaponInFPLocation(EWeaponSightType SightType){
+	switch (SightType){
+		case EWeaponSightType::IRON_SIGHT:
+			sightType = SightType;
+			return FVector(30.189329, -14.91, -162.600009);
+		
+		case EWeaponSightType::RED_DOT:
+			sightType = SightType;
+			return FVector(30.189329, -14.91, -162.600009);
+		
+		default:
+			return FVector::ZeroVector;
+	}
+	
 }
 
 UTexture2D* ARifleAR4::GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode){
@@ -78,8 +105,17 @@ USoundAttenuation* ARifleAR4::GetWeaponFireSoundAttenuation(){
 	return LoadObject<USoundAttenuation>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Attenuation/WeaponShot_att"));
 }
 
-USoundBase* ARifleAR4::GetWeaponFireSound(){
-	return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/RifleA_Fire_Cue"));
+USoundBase* ARifleAR4::GetWeaponFireSound(EWeaponMuzzleType MuzzleType){
+	switch (MuzzleType){
+		case EWeaponMuzzleType::SUPPRESSOR:
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/AR4_FireSuppressor"));
+		
+		case EWeaponMuzzleType::NORMAL:
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/RifleA_Fire_Cue"));
+		
+		default:
+			return nullptr;
+	}
 }
 
 UAnimMontage* ARifleAR4::GetWeaponInFPFireAnimation(){

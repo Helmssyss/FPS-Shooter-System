@@ -17,3 +17,13 @@ enum class EWeaponMagazineType : uint8 {
 	EMPTY,
 	FULL
 };
+
+enum class EWeaponMuzzleType : uint8 {
+	NORMAL,
+	SUPPRESSOR
+};
+
+enum class EWeaponSightType : uint8 {
+	IRON_SIGHT,
+	RED_DOT
+};

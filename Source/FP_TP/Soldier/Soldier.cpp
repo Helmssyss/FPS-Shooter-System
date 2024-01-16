@@ -3,6 +3,7 @@
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Bullets/BaseBulletInterface.h"
 #include "../Widgets/SoldierInterfaceWidget.h"
+#include "../Widgets/WeaponCustomizeWidget.h"
 
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraShakeBase.h"
@@ -34,6 +35,7 @@ ASoldier::ASoldier(){
 	const static ConstructorHelpers::FObjectFinder<UCurveFloat> GetRECOIL_YAW_Curve(TEXT("/Game/Blueprint/RECOIL_YAW_Curve"));
 	const static ConstructorHelpers::FClassFinder<UCameraShakeBase> FireCameraShake(TEXT("/Game/Blueprint/FireCameraShake"));
 	const static ConstructorHelpers::FClassFinder<UUserWidget> GetSoldierInterfaceWidget(TEXT("/Game/Widgets/BP_SoldierInterfaceWidget"));
+	const static ConstructorHelpers::FClassFinder<UUserWidget> GetWeaponCustomizeWidget(TEXT("/Game/Widgets/BP_WeaponCustomizationWidget"));
 
 	GetMesh()->SetAnimClass(TP_BodyAnimClass.Object->GeneratedClass);
 	GetMesh()->SetSkeletalMesh(BodyMesh.Object);
@@ -74,8 +76,18 @@ ASoldier::ASoldier(){
 
 	TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_GunMesh"));
 	TP_Gun->SetupAttachment(GetMesh(), FName("TP_rightHand"));
-	TP_Gun->SetCastHiddenShadow(true);
-	TP_Gun->bOwnerNoSee = true;
+
+	TP_SightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TP_SightMesh"));
+	TP_SightMesh->SetupAttachment(TP_Gun,FName("Sight"));
+	TP_SightMesh->SetStaticMesh(nullptr);
+
+	TP_GripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TP_GripMesh"));
+	TP_GripMesh->SetupAttachment(TP_Gun, FName("Grip"));
+	TP_GripMesh->SetStaticMesh(nullptr);
+
+	TP_MuzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TP_MuzzleMesh"));
+	TP_MuzzleMesh->SetupAttachment(TP_Gun, FName("Muzzle"));
+	TP_MuzzleMesh->SetStaticMesh(nullptr);
 
 	GetMesh()->CastShadow = true;
 	GetMesh()->bOwnerNoSee = true;
@@ -86,6 +98,15 @@ ASoldier::ASoldier(){
 	FP_Foots->CastShadow = false;
 	FP_Legs->bOnlyOwnerSee = true;
 	FP_Legs->CastShadow = false;
+	TP_Gun->SetCastHiddenShadow(true);
+	TP_Gun->bOwnerNoSee = true;
+
+	TP_SightMesh->SetCastHiddenShadow(true);
+	TP_SightMesh->bOwnerNoSee = true;
+	TP_GripMesh->SetCastHiddenShadow(true);
+	TP_GripMesh->bOwnerNoSee = true;
+	TP_MuzzleMesh->SetCastHiddenShadow(true);
+	TP_MuzzleMesh->bOwnerNoSee = true;
 
 	ADS_Curve = GetADS_Curve.Object;
 	PitchCurve = GetRECOIL_PITCH_Curve.Object;
@@ -93,6 +114,7 @@ ASoldier::ASoldier(){
 
 	TCameraShake = FireCameraShake.Class;
 	TSoldierInterfaceWidget = GetSoldierInterfaceWidget.Class;
+	TWeaponCustomizeWidget = GetWeaponCustomizeWidget.Class;
 }
 
 void ASoldier::BeginPlay(){
@@ -148,6 +170,7 @@ void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){
 		PlayerInputComponent->BindAction("OnFire", IE_Released, this, &ASoldier::OnFireReleased);
 		PlayerInputComponent->BindAction("FireMode", IE_Pressed, this, &ASoldier::FireMode);
 		PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASoldier::Reload);
+		PlayerInputComponent->BindAction("WeaponCustomize", IE_Pressed, this, &ASoldier::WeaponCustomizeAnimation);
 
 		PlayerInputComponent->BindAxis("MoveFB", this, &ASoldier::MoveFB);
 		PlayerInputComponent->BindAxis("MoveRL", this, &ASoldier::MoveRL);
@@ -199,12 +222,13 @@ void ASoldier::SprintStop(){
 }
 
 void ASoldier::AimDownSightStart() {
-	GLog->Log("PLAY");
 	ADS_Timeline.Play();
+	SoldierInterfaceWidget->SetVisibleCrosshair(true);
 	bAimDownSight = true;
 }
 
 void ASoldier::AimDownSightReverse() {
+	SoldierInterfaceWidget->SetVisibleCrosshair(false);
 	ADS_Timeline.Reverse();
 	bAimDownSight = false;
 }
@@ -224,10 +248,10 @@ void ASoldier::RecoilInterpolate(float DeltaTime){
 			RecoilStartRotation = FP_Camera->GetComponentRotation();
 	}
 	if (RecoilTimeline.IsReversing()) {
-		if (GetCharacterMovement()->Velocity != FVector::ZeroVector) {
-			RecoilTimeline.Stop();
-			return;
-		}
+		//if (GetCharacterMovement()->Velocity != FVector::ZeroVector) {
+		//	RecoilTimeline.Stop();
+		//	return;
+		//}
 		if (FMath::Abs(yawInput) > 0 || FMath::Abs(pitchInput) > 0) {
 			RecoilTimeline.Stop();
 			return;
@@ -255,7 +279,7 @@ void ASoldier::OnAimDownSightFinished() {
 
 void ASoldier::AimDownSightUpdate(float Alpha) {
 	FP_Camera->SetFieldOfView(FMath::Lerp(FOV_Start, FOV_End, Alpha));
-	FP_Arms->SetRelativeLocation(FMath::Lerp<FVector>(FP_ArmVecStart, currentRightHandWeapon->GetWeaponInFPLocation(), Alpha));
+	FP_Arms->SetRelativeLocation(FMath::Lerp<FVector>(FP_ArmVecStart, currentRightHandWeapon->GetWeaponInFPLocation(currentRightHandWeapon->GetWeaponSightType()), Alpha));
 	FP_Arms->SetRelativeRotation(FMath::Lerp<FRotator>(FP_ArmRotStart, currentRightHandWeapon->GetWeaponInFPRotation(), Alpha));
 }
 
@@ -291,12 +315,13 @@ void ASoldier::FireMode() {
 		}
 		SoldierInterfaceWidget->RemoveFromParent();
 		SoldierInterfaceWidget->AddToViewport();
+		UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/FireModeSound")));
 	}
 }
 
 void ASoldier::OnFire(){
 	if (currentRightHandWeapon) {
-		if (currentRightHandWeapon->GetCurrentAmmo() != 0) {
+		if (currentRightHandWeapon->GetCurrentAmmo() != 0 && !bWeaponCustomize) {
 			RecoilStartRotation = FP_Camera->GetComponentRotation();
 				switch (currentRightHandWeapon->GetCurrentWeaponFireMode()) {
 					case EWeaponFireModes::AUTO_MODE: {
@@ -346,7 +371,7 @@ void ASoldier::ShootFire() {
 			const FVector selectVector = SelectVector(ResultHit.ImpactPoint, ResultHit.TraceEnd, trace);
 			const FRotator lookAtRot = FindLookAtRotation(currentRightHandWeapon->GetWeaponMesh()->GetSocketLocation(FName("Muzzle")), selectVector);
 			const FRotator makeRotator = FRotator(lookAtRot.Pitch + 0.3, lookAtRot.Yaw, lookAtRot.Roll);
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 4);
+			//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 4);
 			const FTransform makeTransform = FTransform(makeRotator, currentRightHandWeapon->GetWeaponMesh()->GetSocketLocation(FName("Muzzle")), FVector(1.7, 1.7, 1.7));
 			FActorSpawnParameters params;
 			params.Instigator = this;
@@ -364,29 +389,55 @@ void ASoldier::ShootFire() {
 
 				UGameplayStatics::SpawnEmitterAttached(currentRightHandWeapon->GetWeaponMuzzleParticle(), currentRightHandWeapon->GetWeaponMesh(), "Muzzle",
 					muzzleSocketTransform.GetLocation(), FP_Camera->GetComponentRotation(), FVector(1, 1, 1), EAttachLocation::Type::KeepWorldPosition);
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), currentRightHandWeapon->GetWeaponFireSound(), GetActorLocation(), 1, 1, 0, currentRightHandWeapon->GetWeaponFireSoundAttenuation());
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), currentRightHandWeapon->GetWeaponFireSound(currentRightHandWeapon->GetWeaponMuzzleType()), GetActorLocation(), 1, 1, 0, currentRightHandWeapon->GetWeaponFireSoundAttenuation());
 				currentRightHandWeapon->PlayWeaponFireAnimation();
+				SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->FireSpreadCrossHair);
 			}
-			DrawDebugBox(GetWorld(), ResultHit.ImpactPoint, FVector(3, 3, 3), FColor::Red, false, 3.f);
-		}
-		else {
+			//DrawDebugBox(GetWorld(), ResultHit.ImpactPoint, FVector(3, 3, 3), FColor::Red, false, 3.f);
+		}else {
 			OnFireReleased();
 		}
 	}
 }
 
 void ASoldier::OnFireReleased(){
-	if (currentRightHandWeapon)
-		if (currentRightHandWeapon->GetTotalAmmo() != 0) {
-			RecoilReverse();
-			GetWorldTimerManager().ClearTimer(T_FireModeHandle);
-		}
+	if (currentRightHandWeapon) {
+		RecoilReverse();
+		GetWorldTimerManager().ClearTimer(T_FireModeHandle);
+	}
 }
 
 void ASoldier::Reload() {
 	if (currentRightHandWeapon) {
-		//bReloading = true;
-		FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPReloadAnimation());
-		GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPReloadAnimation());
+		if (currentRightHandWeapon->GetTotalAmmo() != 0) {
+			//bReloading = true;
+			FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPReloadAnimation());
+			GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPReloadAnimation());
+		}
+	}
+}
+
+void ASoldier::WeaponCustomizeAnimation(){
+	if (currentRightHandWeapon) {
+		UAnimMontage *CustomizeAnimMontage = LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_Rifle_Customize"));
+		if (!bWeaponCustomize){
+			FP_Arms->GetAnimInstance()->Montage_Play(CustomizeAnimMontage,0.f);
+			UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/Rifle_Raise")));
+			WeaponCustomizeWidget = CreateWidget<UWeaponCustomizeWidget>(GetWorld()->GetFirstPlayerController(), TWeaponCustomizeWidget);
+			WeaponCustomizeWidget->AddToViewport();
+			APlayerController* ctrl = Cast<APlayerController>(GetController());
+			if (ctrl)
+				ctrl->bShowMouseCursor = true;
+			bWeaponCustomize = true;
+
+		}else {
+			FP_Arms->GetAnimInstance()->Montage_Play(CustomizeAnimMontage,-1.f);
+			UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/Rifle_Lower")));
+			WeaponCustomizeWidget->RemoveFromParent();
+			APlayerController* ctrl = Cast<APlayerController>(GetController());
+			if (ctrl)
+				ctrl->bShowMouseCursor = false;
+			bWeaponCustomize = false;
+		}
 	}
 }

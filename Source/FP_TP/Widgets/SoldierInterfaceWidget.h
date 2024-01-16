@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,8 +6,11 @@
 
 class UTextBlock;
 class UImage;
-class ASoldier;
+class USizeBox;
+class UCanvasPanelSlot;
 class UFP_TPGameInstance;
+class UWidgetAnimation;
+class ASoldier;
 
 UCLASS()
 class FP_TP_API USoldierInterfaceWidget : public UUserWidget{
@@ -27,9 +28,32 @@ class FP_TP_API USoldierInterfaceWidget : public UUserWidget{
 		UPROPERTY(meta = (BindWidget))
 		UTextBlock *CurrentBulletCount;
 
+		UPROPERTY(BlueprintReadOnly,meta = (BindWidget))
+		USizeBox *SB_Top;
+
+		UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+		USizeBox *SB_Bottom;
+
+		UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+		USizeBox *SB_Left;
+
+		UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+		USizeBox *SB_Right;
+
+		UPROPERTY(Transient, meta = (BindWidgetAnim))
+		UWidgetAnimation *FireSpreadCrossHair;
+
+		float TestVelocity = 0.f;
+		float MaxVelocity = 350.f;
+		float MaxOffset = 100.f;
+		float UpdatedPerSecond = 60.f;
+
+		void SetVisibleCrosshair(bool bIsVisible);
+
 	private:
 		GENERATED_BODY()
 
+		virtual void NativeConstruct() override;
 		virtual void NativeOnInitialized() override;
 
 		UFUNCTION()
@@ -44,5 +68,13 @@ class FP_TP_API USoldierInterfaceWidget : public UUserWidget{
 		UFUNCTION()
 		FSlateBrush ViewWeaponFireMode();
 
+		UFUNCTION()
+		void DynamicCrosshair();
+
 		UFP_TPGameInstance *GameInstance;
+		FTimerHandle TCrosshairHandle;
+		UCanvasPanelSlot *SlotTop;
+		UCanvasPanelSlot *SlotBottom;
+		UCanvasPanelSlot *SlotLeft;
+		UCanvasPanelSlot *SlotRight;
 };

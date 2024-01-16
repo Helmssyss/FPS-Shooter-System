@@ -23,6 +23,7 @@ class UBaseWeaponInterface : public UInterface { GENERATED_BODY() };
 class FP_TP_API IBaseWeaponInterface{
 	public:
 		virtual USkeletalMeshComponent* GetWeaponMesh(void) = 0;
+		/* use for SetSkeletalMesh  */
 		virtual USkeletalMesh* GetWeaponMeshObject(void) = 0;
 		virtual UClass *GetWeaponBulletClass(void) = 0;
 		virtual UParticleSystem* GetWeaponMuzzleParticle(void) = 0;
@@ -37,12 +38,12 @@ class FP_TP_API IBaseWeaponInterface{
 		virtual UTexture2D* GetWeaponTexture(void) = 0;
 		virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) = 0;
 		virtual USoundAttenuation* GetWeaponFireSoundAttenuation(void) = 0;
-		virtual USoundBase* GetWeaponFireSound(void) = 0;
+		virtual USoundBase* GetWeaponFireSound(EWeaponMuzzleType MuzzleType) = 0;
 		virtual UAnimMontage* GetWeaponInFPFireAnimation(void) = 0;
 		virtual UAnimMontage* GetWeaponInFPReloadAnimation(void) = 0;
 		virtual UAnimMontage* GetWeaponInTPReloadAnimation(void) = 0;
 		virtual UAnimMontage* GetWeaponInTPFireAnimation(void) = 0;
-		virtual FVector GetWeaponInFPLocation(void) = 0;
+		virtual FVector GetWeaponInFPLocation(EWeaponSightType SightType) = 0;
 		virtual FRotator GetWeaponInFPRotation(void) = 0;
 		virtual const char* GetWeaponMagazineBoneName(void) = 0;
 		virtual UClass* GetWeaponMagazine(void) = 0;
@@ -50,6 +51,13 @@ class FP_TP_API IBaseWeaponInterface{
 		virtual void SpawnEjectBullet(void) = 0;
 		virtual void PlayWeaponFireAnimation(void) = 0;
 		virtual void PlayWeaponShellSetupAnimation(void) = 0;
+		virtual UStaticMeshComponent* GetWeaponCustomizeSight(void) = 0;
+		virtual UStaticMeshComponent* GetWeaponCustomizeGrip(void) = 0;
+		virtual UStaticMeshComponent* GetWeaponCustomizeMuzzle(void) = 0;
+		virtual EWeaponSightType GetWeaponSightType(void) = 0;
+		virtual EWeaponMuzzleType GetWeaponMuzzleType(void) = 0;
+		virtual void SetWeaponMuzzleType(EWeaponMuzzleType MuzzleType) = 0;
+		virtual void SetWeaponSightType(EWeaponSightType SightType) = 0;
 
 	private:
 		GENERATED_BODY()

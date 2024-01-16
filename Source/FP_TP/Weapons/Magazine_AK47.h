@@ -18,5 +18,5 @@ class FP_TP_API AMagazine_AK47 : public ABaseMagazine {
 
 	private:
 		GENERATED_BODY()
-		UStaticMeshComponent* magazineMesh;
+		UStaticMeshComponent *magazineMesh;
 };

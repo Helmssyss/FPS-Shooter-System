@@ -19,6 +19,21 @@ ARifleAK::ARifleAK() {
 	weaponMesh->SetupAttachment(GetRootComponent());
 	weaponMesh->SetSkeletalMesh(WeaponMesh.Object);
 
+	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_SightMesh"));
+	sightMesh->SetupAttachment(weaponMesh, FName("Sight"));
+	sightMesh->SetStaticMesh(nullptr);
+	sightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_MuzzleMesh"));
+	muzzleMesh->SetupAttachment(weaponMesh, FName("Muzzle"));
+	muzzleMesh->SetStaticMesh(nullptr);
+	muzzleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_GripMesh"));
+	gripMesh->SetupAttachment(weaponMesh, FName("Grip"));
+	gripMesh->SetStaticMesh(nullptr);
+	gripMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	meshObject = WeaponMesh.Object;
 	MuzzleParticle = WeaponMuzzle.Object;
 	weaponTexture = WeaponTexture.Object;
@@ -40,8 +55,7 @@ void ARifleAK::WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) {
 	if (!bSoldierAimDownSight) {
 		Trace.Y += Trace.Y * FMath::RandRange(0.20f, -0.20f);
 		Trace.Z += Trace.Z * FMath::RandRange(0.20f, -0.50f);
-	}
-	else {
+	}else {
 		Trace.Y += Trace.Y * FMath::RandRange(0.0f, 0.01f);
 		Trace.Z += Trace.Z * FMath::RandRange(0.0f, 0.01f);
 	}
@@ -50,11 +64,24 @@ void ARifleAK::WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) {
 void ARifleAK::ReloadWeapon() {
 	if (bulletShot < bulletInMag) {
 		const short missingBullet = bulletInMag - bulletShot;
-		const short eklenecekMermi = FMath::Min<short>(missingBullet, totalBullet);
+		const short willAddBullet = FMath::Min<short>(missingBullet, totalBullet);
 
-		bulletShot += eklenecekMermi;
-		totalBullet -= eklenecekMermi;
+		bulletShot += willAddBullet;
+		totalBullet -= willAddBullet;
 		remainBullet = bulletShot;
+	}
+}
+
+FVector ARifleAK::GetWeaponInFPLocation(EWeaponSightType SightType){
+	switch (SightType){
+		case EWeaponSightType::IRON_SIGHT:
+			return FVector(5.976045, -15.000009, -159.173096);
+		
+		case EWeaponSightType::RED_DOT:
+			return FVector(5.976032, -15.000015, -161.336090); //-> With red dot
+		
+		default:
+			return FVector::ZeroVector;
 	}
 }
 
@@ -78,8 +105,16 @@ USoundAttenuation* ARifleAK::GetWeaponFireSoundAttenuation() {
 	return LoadObject<USoundAttenuation>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Attenuation/WeaponShot_att"));
 }
 
-USoundBase* ARifleAK::GetWeaponFireSound() {
-	return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/RifleA_Fire_Cue"));
+USoundBase* ARifleAK::GetWeaponFireSound(EWeaponMuzzleType MuzzleType) {
+	switch (MuzzleType){
+		case EWeaponMuzzleType::SUPPRESSOR:
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/AR4_FireSuppressor"));
+
+		case EWeaponMuzzleType::NORMAL:
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/RifleA_Fire_Cue"));
+		default:
+			return nullptr;
+	}
 }
 
 UAnimMontage* ARifleAK::GetWeaponInFPFireAnimation() {

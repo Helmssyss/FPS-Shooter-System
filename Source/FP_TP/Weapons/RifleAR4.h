@@ -31,12 +31,12 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		virtual FORCEINLINE void SetCurrentAmmo(short BulletShot) override { bulletShot = BulletShot; }
 		virtual void ReloadWeapon() override;
 		virtual FORCEINLINE const char* GetWeaponName() override { return "AR4"; }
-		virtual FORCEINLINE FVector GetWeaponInFPLocation() override { return FVector(30.189329, -14.91, -162.600009); }
+		virtual FVector GetWeaponInFPLocation(EWeaponSightType SightType) override;
 		virtual FORCEINLINE FRotator GetWeaponInFPRotation() override { return FRotator(0.0f, -89.999992, -2.000000); }
 		virtual FORCEINLINE UTexture2D* GetWeaponTexture() override { return weaponTexture; }
 		virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) override;
 		virtual USoundAttenuation* GetWeaponFireSoundAttenuation() override;
-		virtual USoundBase* GetWeaponFireSound() override;
+		virtual USoundBase* GetWeaponFireSound(EWeaponMuzzleType MuzzleType) override;
 		virtual UAnimMontage* GetWeaponInFPFireAnimation() override;
 		virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
 		virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
@@ -47,6 +47,13 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		virtual void SpawnEjectBullet() override;
 		virtual void PlayWeaponFireAnimation() override;
 		virtual FORCEINLINE void PlayWeaponShellSetupAnimation() override {}
+		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeSight() override { return sightMesh; }
+		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeGrip() override { return gripMesh; }
+		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeMuzzle() override { return muzzleMesh; }
+		virtual FORCEINLINE EWeaponSightType GetWeaponSightType() override { return sightType; }
+		virtual FORCEINLINE EWeaponMuzzleType GetWeaponMuzzleType() override { return muzzleType; }
+		virtual FORCEINLINE void SetWeaponMuzzleType(EWeaponMuzzleType MuzzleType) override { muzzleType = MuzzleType; }
+		virtual FORCEINLINE void SetWeaponSightType(EWeaponSightType SightType) override { sightType = SightType; }
 
 	private:
 		GENERATED_BODY()
@@ -55,11 +62,23 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		USkeletalMeshComponent* weaponMesh;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* sightMesh;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* muzzleMesh;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* gripMesh;
 
 		USkeletalMesh *meshObject;
 		UParticleSystem *MuzzleParticle;
 		UTexture2D *weaponTexture;
 		EWeaponFireModes FireMode;
+		EWeaponSightType sightType;
+		EWeaponMuzzleType muzzleType;
+
 		short bulletShot = 35;
 		short bulletInMag = 35;
 		short totalBullet = 120;

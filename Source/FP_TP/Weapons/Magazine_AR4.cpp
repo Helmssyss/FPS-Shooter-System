@@ -20,8 +20,8 @@ AMagazine_AR4::AMagazine_AR4(){
 	magazineMesh->SetCollisionResponseToChannels(CollisionResponseContainer);
 }
 
-void AMagazine_AR4::SetMagazineMesh(EWeaponMagazineType magazineType){
-	switch (magazineType){
+void AMagazine_AR4::SetMagazineMesh(EWeaponMagazineType MuzzleType){
+	switch (MuzzleType){
 		case EWeaponMagazineType::EMPTY:{
 			magazineMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/AR4/SM_AR4_Mag_Empty")));
 			break;

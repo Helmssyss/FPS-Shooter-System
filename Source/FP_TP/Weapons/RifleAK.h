@@ -32,35 +32,55 @@ class FP_TP_API ARifleAK : public AActor, public IBaseWeaponInterface{
 		virtual FORCEINLINE void SetCurrentAmmo(short BulletShot) override { bulletShot = BulletShot; }
 		virtual void ReloadWeapon() override;
 		virtual FORCEINLINE const char* GetWeaponName() override { return "AK47"; }
-		virtual FORCEINLINE FVector GetWeaponInFPLocation() override { return FVector(5.976045, -15.000009, -159.173096); }
+		virtual FVector GetWeaponInFPLocation(EWeaponSightType SightType) override;
 		virtual FORCEINLINE FRotator GetWeaponInFPRotation() override { return FRotator(0.000000, -89.989899, -1.866617); }
 		virtual FORCEINLINE UTexture2D* GetWeaponTexture() override { return weaponTexture; }
 		virtual UTexture2D* GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) override;
 		virtual USoundAttenuation* GetWeaponFireSoundAttenuation() override;
-		virtual USoundBase* GetWeaponFireSound() override;
+		virtual USoundBase* GetWeaponFireSound(EWeaponMuzzleType MuzzleType) override;
 		virtual UAnimMontage* GetWeaponInFPFireAnimation() override;
 		virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
 		virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
 		virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
 		virtual FORCEINLINE const char* GetWeaponMagazineBoneName() override { return "b_gun_mag"; }
 		virtual UClass* GetWeaponMagazine() override;
-		virtual EBulletsEjectType GetEjectBulletType() override { return EBulletsEjectType::EJECT_762; }
+		virtual FORCEINLINE EBulletsEjectType GetEjectBulletType() override { return EBulletsEjectType::EJECT_762; }
 		virtual void SpawnEjectBullet() override;
 		virtual void PlayWeaponFireAnimation() override;
 		virtual void PlayWeaponShellSetupAnimation() override;
+		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeSight() override { return sightMesh; }
+		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeGrip() override { return gripMesh; }
+		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeMuzzle() override { return muzzleMesh; }
+		virtual FORCEINLINE EWeaponSightType GetWeaponSightType() override { return sightType; }
+		virtual FORCEINLINE EWeaponMuzzleType GetWeaponMuzzleType() override { return muzzleType; }
+		virtual FORCEINLINE void SetWeaponMuzzleType(EWeaponMuzzleType MuzzleType) override { muzzleType = MuzzleType; }
+		virtual FORCEINLINE void SetWeaponSightType(EWeaponSightType SightType) override { sightType = SightType; }
 
 	private:
 		GENERATED_BODY()
+
 		virtual void BeginPlay() override;
 		virtual void Tick(float DeltaTime) override;
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		USkeletalMeshComponent* weaponMesh;
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* sightMesh;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* muzzleMesh;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* gripMesh;
+
 		USkeletalMesh* meshObject;
 		UParticleSystem* MuzzleParticle;
 		UTexture2D* weaponTexture;
 		EWeaponFireModes FireMode;
+		EWeaponSightType sightType;
+		EWeaponMuzzleType muzzleType;
+
 		short bulletShot = 52;
 		short bulletInMag = 52;
 		short totalBullet = 100;

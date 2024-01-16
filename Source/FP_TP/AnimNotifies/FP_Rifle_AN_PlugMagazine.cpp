@@ -24,5 +24,4 @@ void UFP_Rifle_AN_PlugMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 			}
 		}
 	}
-
 }
