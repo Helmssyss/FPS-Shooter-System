@@ -20,4 +20,4 @@
 ### Note:
 *  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
 
-  # I was inspired by while writing this system is BattleField 1.
+  # I was inspired by while writing this system is BattleField1.
