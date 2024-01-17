@@ -1,25 +1,41 @@
 `Content` file will be added.
 
 ### Current Abilities:
-  - [x] Third Person Model
-  - [x] Spesific animations for Third Person Model
-  - [x] First Person Model
-  - [x] Spesific animations for First Person Model
-  - [x] Aim Down Sight(ADS) with timeline
-  - [x] Recoil with Timeline
-  - [x] Customizable Weapons (two weapons and weapon cosmetics. I didn't create the assets.)
-  - [x] Eject Bullets
-  - [x] Reload System
-  - [x] Fire Mode (Semi-Auto, Auto, Single)
-  - [x] Dynamic Crosshair
-  - [x] Weapon Spread
-  - [x] Weapon Sway
-
+  &check; Third Person Model
+  
+  &check; Spesific animations for Third Person Model
+  
+  &check; First Person Model
+  
+  &check; Spesific animations for First Person Model
+  
+  &check; Aim Down Sight(ADS) with timeline
+  
+  &check; Recoil with Timeline
+  
+  &check; Customizable Weapons (two weapons and weapon cosmetics. I didn't create the assets.)
+  
+  &check; Eject Bullets
+  
+  &check; Reload System
+  
+  &check; Fire Mode (Semi-Auto, Auto, Single)
+  
+  &check; Dynamic Crosshair
+  
+  &check; Weapon Spread
+  
+  &check; Weapon Sway
+  
+---
 ### TO:DO
-  - [ ] Weapon Clipping
-  - [ ] Character Leaning
-  - [x] Weapon Sway
-
+  &cross; Weapon Clipping
+  
+  &cross; Character Leaning
+  
+  &check; Weapon Sway
+  
+---
 ### Note:
 -  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
 -  My other repos:
