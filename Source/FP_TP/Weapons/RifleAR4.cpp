@@ -72,9 +72,11 @@ void ARifleAR4::ReloadWeapon(){
 FVector ARifleAR4::GetWeaponInFPLocation(EWeaponSightType SightType){
 	switch (SightType){
 		case EWeaponSightType::IRON_SIGHT:
+			sightType = SightType;
 			return FVector(30.189329, -14.91, -162.600009);
 		
 		case EWeaponSightType::RED_DOT:
+			sightType = SightType;
 			return FVector(30.189329, -14.91, -162.600009);
 		
 		default:

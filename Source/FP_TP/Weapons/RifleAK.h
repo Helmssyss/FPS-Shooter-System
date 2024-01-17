@@ -55,6 +55,7 @@ class FP_TP_API ARifleAK : public AActor, public IBaseWeaponInterface{
 		virtual FORCEINLINE EWeaponMuzzleType GetWeaponMuzzleType() override { return muzzleType; }
 		virtual FORCEINLINE void SetWeaponMuzzleType(EWeaponMuzzleType MuzzleType) override { muzzleType = MuzzleType; }
 		virtual FORCEINLINE void SetWeaponSightType(EWeaponSightType SightType) override { sightType = SightType; }
+		virtual FORCEINLINE FTransform GetWeaponLHandSocketTransform() override { return weaponMesh->GetSocketTransform(FName("LeftHandSocket")); }
 
 	private:
 		GENERATED_BODY()

@@ -23,11 +23,25 @@ class FP_TP_API USoldierAnimInstance : public UAnimInstance{
 
 		UPROPERTY(BlueprintReadOnly, Category = Soldier)
 		bool soldierAimDownSight;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		FRotator RightHandRotator;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		FTransform LeftHandSocketTransform;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		bool soldierReload;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		bool soldierWeaponCustomize;
+
 	private:
 		GENERATED_BODY()
 		virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 		FRotator GetLookRotation(ASoldier* soldier);
 		FRotator InverseTransformRotation(const FTransform& Transform, FRotator Rotation);
+		void WeaponSway(ASoldier* soldier);
 
 		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		FRotator SoldierHeadRotation;

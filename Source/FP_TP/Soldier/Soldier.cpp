@@ -190,6 +190,7 @@ void ASoldier::MoveFB(float Value){
 
 void ASoldier::MoveRL(float Value){
 	if (Controller != nullptr) {
+		moveSide = Value;
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -410,7 +411,8 @@ void ASoldier::OnFireReleased(){
 void ASoldier::Reload() {
 	if (currentRightHandWeapon) {
 		if (currentRightHandWeapon->GetTotalAmmo() != 0) {
-			//bReloading = true;
+			bReloading = true;
+			printf(FColor::Yellow, "bReloading -> %i", bReloading);
 			FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPReloadAnimation());
 			GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPReloadAnimation());
 		}

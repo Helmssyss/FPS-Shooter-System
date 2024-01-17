@@ -15,8 +15,6 @@ class USoundAttenuation;
 class USoundBase;
 class UAnimMontage;
 
-class IBaseMagazineInterface;
-
 UINTERFACE(MinimalAPI)
 class UBaseWeaponInterface : public UInterface { GENERATED_BODY() };
 
@@ -58,6 +56,7 @@ class FP_TP_API IBaseWeaponInterface{
 		virtual EWeaponMuzzleType GetWeaponMuzzleType(void) = 0;
 		virtual void SetWeaponMuzzleType(EWeaponMuzzleType MuzzleType) = 0;
 		virtual void SetWeaponSightType(EWeaponSightType SightType) = 0;
+		virtual FTransform GetWeaponLHandSocketTransform() = 0;
 
 	private:
 		GENERATED_BODY()

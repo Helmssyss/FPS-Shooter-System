@@ -13,11 +13,12 @@
   - [x] Fire Mode (Semi-Auto, Auto, Single)
   - [x] Dynamic Crosshair
   - [x] Weapon Spread
+  - [x] Weapon Sway
 
 ### TO:DO
   - [ ] Weapon Clipping
   - [ ] Character Leaning
-  - [ ] Weapon Sway
+  - [x] Weapon Sway
 
 ### Note:
 -  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._

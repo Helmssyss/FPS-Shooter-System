@@ -30,7 +30,12 @@ class FP_TP_API ASoldier : public ACharacter{
 		FORCEINLINE UStaticMeshComponent* GetTPGunSightMesh() const { return TP_SightMesh; }
 		FORCEINLINE UStaticMeshComponent* GetTPGunMuzzleMesh() const { return TP_MuzzleMesh; }
 		FORCEINLINE UStaticMeshComponent* GetTPGunGripMesh() const { return TP_GripMesh; }
-		//FORCEINLINE float GetRecoilSize() { return RecoilInterpolatePitch; }
+		FORCEINLINE void SetReloadState(bool bReloadState) { bReloading = bReloadState; }
+		FORCEINLINE bool GetReloadState() { return bReloading; }
+		FORCEINLINE float GetMoveSide() const { return moveSide; }
+		FORCEINLINE float GetMouseX() const { return yawInput; }
+		FORCEINLINE float GetMouseY() const { return pitchInput; }
+		FORCEINLINE bool GetWeaponCustomizeState() const { return bWeaponCustomize; }
 
 	private:
 		GENERATED_BODY()
@@ -56,6 +61,7 @@ class FP_TP_API ASoldier : public ACharacter{
 		void RecoilReverse();
 		void RecoilInterpolate(float DeltaTime);
 		void WeaponCustomizeAnimation();
+		void SetMouseXYForWeaponSway();
 		FORCEINLINE FVector SelectVector(const FVector &A, const FVector &B, const bool &bSelectA) const { return bSelectA ? A : B; }
 		FORCEINLINE FRotator FindLookAtRotation(const FVector &Start, const FVector &Target) { return FRotationMatrix::MakeFromX(Target - Start).Rotator(); }
 		FORCEINLINE FRotator DeltaRotator(const FRotator& A, const FRotator& B) { return (A - B).GetNormalized(); }
@@ -131,6 +137,7 @@ class FP_TP_API ASoldier : public ACharacter{
 
 		float yawInput;
 		float pitchInput;
+		float moveSide;
 		const float BaseTurnRate = 45.f;
 		const float BaseLookUpRate = 45.f;
 		const float FOV_Start = 95.f;
@@ -142,12 +149,14 @@ class FP_TP_API ASoldier : public ACharacter{
 		bool bAimDownSight;
 		bool bSprint;
 		bool bWeaponCustomize;
+		bool bReloading;
 
 		IBaseWeaponInterface *currentRightHandWeapon;
 		ABaseMagazine* currentGetMagazineOwner;
 
 		FTimerHandle T_FP_ArmFireAnimationHandle;
 		FTimerHandle T_FireModeHandle;
+		FTimerHandle T_WeaponSwayHandle;
 
 		uint8 currentWeaponFireMode;
 		uint8 SemiAutoFireCount = 0;
