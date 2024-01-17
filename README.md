@@ -18,6 +18,9 @@
   - [ ] Weapon Clipping
 
 ### Note:
-*  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
+-  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
+-  My other repos:
+    - [TPS-Shooter-System-Alternative](https://github.com/Helmssyss/TPS-Shooter-System-Alternative)
+    - [TPS-Shooter-System-Beginner](https://github.com/Helmssyss/TPS-Shooter-System)
 
   # I was inspired by while writing this system is BattleField1.
