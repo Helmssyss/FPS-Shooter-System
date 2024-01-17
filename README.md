@@ -16,6 +16,8 @@
 
 ### TO:DO
   - [ ] Weapon Clipping
+  - [ ] Character Leaning
+  - [ ] Weapon Sway
 
 ### Note:
 -  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
