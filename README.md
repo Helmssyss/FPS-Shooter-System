@@ -29,11 +29,13 @@
   
 ---
 ### TO:DO
-  &cross; Weapon Clipping
+  &#x2610; Weapon Clipping
   
-  &cross; Character Leaning
+  &#x2610; Character Leaning
   
   &check; Weapon Sway
+
+  &#x2610; Weapon Switch
   
 ---
 ### Note:
