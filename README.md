@@ -32,8 +32,6 @@
   
   &check; Weapon Spread
   
-  &check; Weapon Sway
-  
 ---
 ### TO:DO
   &check; Weapon Clipping
