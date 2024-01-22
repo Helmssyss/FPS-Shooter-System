@@ -44,4 +44,8 @@
     - [TPS-Shooter-System | Intermediate](https://github.com/Helmssyss/TPS-Shooter-System-Alternative)
     - [TPS-Shooter-System | Beginner](https://github.com/Helmssyss/TPS-Shooter-System)
 
+Weapon Sway:
+
+![WeaponSway](https://github.com/Helmssyss/FPTP-Shooter-System/assets/84701901/64eac934-d455-4cea-a6a0-b6b5ab1fe439)
+
   # I was inspired by while writing this system is BattleField1.
