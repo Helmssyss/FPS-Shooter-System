@@ -13,7 +13,7 @@
   
   &check; Recoil with Timeline
   
-  &check; Customizable Weapons (two weapons and weapon cosmetics. I didn't create the assets.)
+  &check; Weapon Attachment System
   
   &check; Eject Bullets
   
