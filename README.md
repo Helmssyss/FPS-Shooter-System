@@ -36,13 +36,13 @@
   
 ---
 ### TO:DO
-  &#x2610; Weapon Clipping
+  &check; Weapon Clipping
   
   &#x2610; Character Leaning
   
   &check; Weapon Sway
 
-  &#x2610; Weapon Switch
+  &check; Weapon Switch
   
 ---
 ### Note:
