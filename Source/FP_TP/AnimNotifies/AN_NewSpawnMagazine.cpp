@@ -1,17 +1,17 @@
-#include "FP_Rifle_AN_NewSpawnMagazine.h"
+#include "AN_NewSpawnMagazine.h"
 #include "../Soldier/Soldier.h"
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Weapons/BaseMagazine.h"
 #include "Kismet/GameplayStatics.h"
 
-void UFP_Rifle_AN_NewSpawnMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
+void UAN_NewSpawnMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
 	Super::Notify(MeshComp, Animation);
 	Soldier = Cast<ASoldier>(MeshComp->GetOwner());
 	if (Soldier){
 		const FTransform LeftHandSocketTransform = Soldier->GetFPArm()->GetSocketTransform(FName("leftHand"));
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		ABaseMagazine* magazine = MeshComp->GetOwner()->GetWorld()->SpawnActor<ABaseMagazine>(Soldier->GetCurrentFPRightHandWeapon()->GetWeaponMagazine(), LeftHandSocketTransform, SpawnParams);
+		ABaseMagazine* magazine = MeshComp->GetOwner()->GetWorld()->SpawnActor<ABaseMagazine>(Soldier->GetCurrentFPRightHandWeapon()->GetWeaponMagazineClass(), LeftHandSocketTransform, SpawnParams);
 		if (magazine) {
 			Soldier->SetPreviousMagazineOwner(magazine);
 			magazine->SetMagazineMesh(EWeaponMagazineType::FULL);

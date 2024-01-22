@@ -4,20 +4,16 @@
 #include "../Bullets/BaseBulletInterface.h"
 #include "../Widgets/SoldierInterfaceWidget.h"
 #include "../Widgets/WeaponCustomizeWidget.h"
-
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraShakeBase.h"
-
 #include "Animation/AnimBlueprint.h"
 #include "Components/SkeletalMeshComponent.h"
-
+#include "Components/HorizontalBox.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-
 #include "UObject/ConstructorHelpers.h"
-
 #include "Kismet/GameplayStatics.h"
-
 #include "DrawDebugHelpers.h"
 
 #define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 3, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
@@ -29,13 +25,12 @@ ASoldier::ASoldier(){
 	const static ConstructorHelpers::FObjectFinder<USkeletalMesh> FP_FootsMesh(TEXT("/Game/Character/FirstPerson/Mesh/SK_Man_Shoes"));
 	const static ConstructorHelpers::FObjectFinder<USkeletalMesh> FP_LegsMesh(TEXT("/Game/Character/FirstPerson/Mesh/SK_Man_Pants"));
 	const static ConstructorHelpers::FObjectFinder<UAnimBlueprint> FP_RifleAnimClass(TEXT("/Game/Character/FirstPerson/Animation/FP_AnimBP"));
-	const static ConstructorHelpers::FObjectFinder<UAnimBlueprint> TP_BodyAnimClass(TEXT("/Game/Character/ThirdPerson/Animation/TP_AnimWtihWeaponBP"));
+	const static ConstructorHelpers::FObjectFinder<UAnimBlueprint> TP_BodyAnimClass(TEXT("/Game/Character/ThirdPerson/Animation/TP_AnimBP"));
 	const static ConstructorHelpers::FObjectFinder<UCurveFloat> GetADS_Curve(TEXT("/Game/Blueprint/ADS_Curve"));
 	const static ConstructorHelpers::FObjectFinder<UCurveFloat> GetRECOIL_PITCH_Curve(TEXT("/Game/Blueprint/RECOIL_PITCH_Curve"));
 	const static ConstructorHelpers::FObjectFinder<UCurveFloat> GetRECOIL_YAW_Curve(TEXT("/Game/Blueprint/RECOIL_YAW_Curve"));
 	const static ConstructorHelpers::FClassFinder<UCameraShakeBase> FireCameraShake(TEXT("/Game/Blueprint/FireCameraShake"));
 	const static ConstructorHelpers::FClassFinder<UUserWidget> GetSoldierInterfaceWidget(TEXT("/Game/Widgets/BP_SoldierInterfaceWidget"));
-	const static ConstructorHelpers::FClassFinder<UUserWidget> GetWeaponCustomizeWidget(TEXT("/Game/Widgets/BP_WeaponCustomizationWidget"));
 
 	GetMesh()->SetAnimClass(TP_BodyAnimClass.Object->GeneratedClass);
 	GetMesh()->SetSkeletalMesh(BodyMesh.Object);
@@ -68,6 +63,13 @@ ASoldier::ASoldier(){
 	FP_Legs->SetAnimationMode(EAnimationMode::AnimationCustomMode);
 	FP_Legs->SetMasterPoseComponent(GetMesh());
 
+	FP_PrimaryGun = CreateDefaultSubobject<UChildActorComponent>(TEXT("FP_PrimaryGun"));
+	FP_PrimaryGun->SetupAttachment(FP_Arms, FName("FP_rightHand"));
+
+	FP_SecondaryGun = CreateDefaultSubobject<UChildActorComponent>(TEXT("FP_SecondaryGun"));
+	FP_SecondaryGun->SetupAttachment(FP_Arms, FName("FP_rightHand"));
+	FP_SecondaryGun->SetRelativeRotation(FRotator(0.f, 1.3f, -5.f));
+
 	FP_Foots = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_FootsMesh"));
 	FP_Foots->SetupAttachment(FP_Legs);
 	FP_Foots->SetSkeletalMesh(FP_FootsMesh.Object);
@@ -76,18 +78,6 @@ ASoldier::ASoldier(){
 
 	TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_GunMesh"));
 	TP_Gun->SetupAttachment(GetMesh(), FName("TP_rightHand"));
-
-	TP_SightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TP_SightMesh"));
-	TP_SightMesh->SetupAttachment(TP_Gun,FName("Sight"));
-	TP_SightMesh->SetStaticMesh(nullptr);
-
-	TP_GripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TP_GripMesh"));
-	TP_GripMesh->SetupAttachment(TP_Gun, FName("Grip"));
-	TP_GripMesh->SetStaticMesh(nullptr);
-
-	TP_MuzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TP_MuzzleMesh"));
-	TP_MuzzleMesh->SetupAttachment(TP_Gun, FName("Muzzle"));
-	TP_MuzzleMesh->SetStaticMesh(nullptr);
 
 	GetMesh()->CastShadow = true;
 	GetMesh()->bOwnerNoSee = true;
@@ -101,20 +91,12 @@ ASoldier::ASoldier(){
 	TP_Gun->SetCastHiddenShadow(true);
 	TP_Gun->bOwnerNoSee = true;
 
-	TP_SightMesh->SetCastHiddenShadow(true);
-	TP_SightMesh->bOwnerNoSee = true;
-	TP_GripMesh->SetCastHiddenShadow(true);
-	TP_GripMesh->bOwnerNoSee = true;
-	TP_MuzzleMesh->SetCastHiddenShadow(true);
-	TP_MuzzleMesh->bOwnerNoSee = true;
-
 	ADS_Curve = GetADS_Curve.Object;
 	PitchCurve = GetRECOIL_PITCH_Curve.Object;
 	YawCurve = GetRECOIL_YAW_Curve.Object;
 
 	TCameraShake = FireCameraShake.Class;
 	TSoldierInterfaceWidget = GetSoldierInterfaceWidget.Class;
-	TWeaponCustomizeWidget = GetWeaponCustomizeWidget.Class;
 }
 
 void ASoldier::BeginPlay(){
@@ -145,6 +127,7 @@ void ASoldier::BeginPlay(){
 
 	SoldierInterfaceWidget = CreateWidget<USoldierInterfaceWidget>(GetWorld()->GetFirstPlayerController(), TSoldierInterfaceWidget);
 	SoldierInterfaceWidget->AddToViewport();
+	GetWorldTimerManager().SetTimer(T_WeaponClippingHandle, this, &ASoldier::WeaponClipping, 0.02f, true);
 }
 
 void ASoldier::Tick(float DeltaTime) {
@@ -169,8 +152,10 @@ void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){
 		PlayerInputComponent->BindAction("OnFire", IE_Pressed, this, &ASoldier::OnFire);
 		PlayerInputComponent->BindAction("OnFire", IE_Released, this, &ASoldier::OnFireReleased);
 		PlayerInputComponent->BindAction("FireMode", IE_Pressed, this, &ASoldier::FireMode);
-		PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASoldier::Reload);
+		PlayerInputComponent->BindAction("Reload - Interact", IE_Pressed, this, &ASoldier::Reload);
 		PlayerInputComponent->BindAction("WeaponCustomize", IE_Pressed, this, &ASoldier::WeaponCustomizeAnimation);
+		PlayerInputComponent->BindAction("FirstWeapon - Rifle", IE_Pressed, this, &ASoldier::FirstWeapon);
+		PlayerInputComponent->BindAction("SecondWeapon - Pistol", IE_Pressed, this, &ASoldier::SecondWeapon);
 
 		PlayerInputComponent->BindAxis("MoveFB", this, &ASoldier::MoveFB);
 		PlayerInputComponent->BindAxis("MoveRL", this, &ASoldier::MoveRL);
@@ -190,7 +175,6 @@ void ASoldier::MoveFB(float Value){
 
 void ASoldier::MoveRL(float Value){
 	if (Controller != nullptr) {
-		moveSide = Value;
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -223,9 +207,12 @@ void ASoldier::SprintStop(){
 }
 
 void ASoldier::AimDownSightStart() {
-	ADS_Timeline.Play();
-	SoldierInterfaceWidget->SetVisibleCrosshair(true);
-	bAimDownSight = true;
+	if (!bWeaponIsClipping) {
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		ADS_Timeline.Play();
+		SoldierInterfaceWidget->SetVisibleCrosshair(true);
+		bAimDownSight = true;
+	}
 }
 
 void ASoldier::AimDownSightReverse() {
@@ -280,7 +267,7 @@ void ASoldier::OnAimDownSightFinished() {
 
 void ASoldier::AimDownSightUpdate(float Alpha) {
 	FP_Camera->SetFieldOfView(FMath::Lerp(FOV_Start, FOV_End, Alpha));
-	FP_Arms->SetRelativeLocation(FMath::Lerp<FVector>(FP_ArmVecStart, currentRightHandWeapon->GetWeaponInFPLocation(currentRightHandWeapon->GetWeaponSightType()), Alpha));
+	FP_Arms->SetRelativeLocation(FMath::Lerp<FVector>(FP_ArmVecStart, currentRightHandWeapon->GetWeaponInFPLocation(currentRightHandWeapon->GetWeaponCosmetics().SightType), Alpha));
 	FP_Arms->SetRelativeRotation(FMath::Lerp<FRotator>(FP_ArmRotStart, currentRightHandWeapon->GetWeaponInFPRotation(), Alpha));
 }
 
@@ -292,6 +279,31 @@ void ASoldier::RecoilStartPitch(float Alpha) {
 void ASoldier::RecoilStartYaw(float Alpha) {
 	if (RecoilTimeline.IsReversing()) { return; }
 	AddControllerYawInput(Alpha);
+}
+
+void ASoldier::WeaponClipping() {
+	if (GetCharacterMovement()->Velocity.Size() <= 300.f && !bSprint) {
+		FHitResult ClipHit;
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+
+		const short length = 100;
+		const FVector start = FP_Camera->GetComponentLocation();
+		const FVector distance = FP_Camera->GetForwardVector() * length;
+		const FVector end = start + distance;
+
+		const bool isHit = GetWorld()->LineTraceSingleByChannel(ClipHit, start, end, ECollisionChannel::ECC_Camera, QueryParams);
+		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 4);
+		if (isHit) {
+			bWeaponIsClipping = true;
+			clipDistance = FVector::Distance(ClipHit.Location, start) / length;
+			DrawDebugBox(GetWorld(), ClipHit.ImpactPoint, FVector(3, 3, 3), FColor::Green, false, 0.02f);
+		}
+		else {
+			clipDistance = 1.f;
+			bWeaponIsClipping = false;
+		}
+	}
 }
 
 void ASoldier::FireMode() {
@@ -342,7 +354,7 @@ void ASoldier::OnFire(){
 					}
 			}
 		}else {
-			// Tetik sesi
+			UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Empty_Gun")));
 		}
 	}
 }
@@ -359,6 +371,7 @@ void ASoldier::SetSemiAutoFire() {
 
 void ASoldier::ShootFire() {
 	if (currentRightHandWeapon) {
+		if(!bWeaponIsClipping)
 		if (currentRightHandWeapon->GetCurrentAmmo() != 0) {
 			FHitResult ResultHit;
 			const short length = 32700;
@@ -371,7 +384,7 @@ void ASoldier::ShootFire() {
 			bool trace = this->GetWorld()->LineTraceSingleByChannel(ResultHit, Start, End, ECollisionChannel::ECC_PhysicsBody, QueryParams);
 			const FVector selectVector = SelectVector(ResultHit.ImpactPoint, ResultHit.TraceEnd, trace);
 			const FRotator lookAtRot = FindLookAtRotation(currentRightHandWeapon->GetWeaponMesh()->GetSocketLocation(FName("Muzzle")), selectVector);
-			const FRotator makeRotator = FRotator(lookAtRot.Pitch + 0.3, lookAtRot.Yaw, lookAtRot.Roll);
+			const FRotator makeRotator = FRotator(lookAtRot.Pitch + 0.2, lookAtRot.Yaw, lookAtRot.Roll);
 			//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 4);
 			const FTransform makeTransform = FTransform(makeRotator, currentRightHandWeapon->GetWeaponMesh()->GetSocketLocation(FName("Muzzle")), FVector(1.7, 1.7, 1.7));
 			FActorSpawnParameters params;
@@ -379,20 +392,19 @@ void ASoldier::ShootFire() {
 			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			IBaseBulletInterface* spwnBullet = GetWorld()->SpawnActor<IBaseBulletInterface>(currentRightHandWeapon->GetWeaponBulletClass(), makeTransform, params);
 			if (spwnBullet) {
-				short bullet = currentRightHandWeapon->GetCurrentAmmo();
-				bullet--;
-				currentRightHandWeapon->SetCurrentAmmo(bullet);
+				shotBullet = currentRightHandWeapon->GetCurrentAmmo();
+				shotBullet--;
+				currentRightHandWeapon->SetCurrentAmmo(shotBullet);
 				const FTransform muzzleSocketTransform(currentRightHandWeapon->GetWeaponMesh()->GetSocketTransform(FName("Muzzle")));
 				FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPFireAnimation());
-				GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPFireAnimation());
-
+				GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPFireAnimMontage());
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), TCameraShake, GetActorLocation(), 80, 0);
-
-				UGameplayStatics::SpawnEmitterAttached(currentRightHandWeapon->GetWeaponMuzzleParticle(), currentRightHandWeapon->GetWeaponMesh(), "Muzzle",
-					muzzleSocketTransform.GetLocation(), FP_Camera->GetComponentRotation(), FVector(1, 1, 1), EAttachLocation::Type::KeepWorldPosition);
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), currentRightHandWeapon->GetWeaponFireSound(currentRightHandWeapon->GetWeaponMuzzleType()), GetActorLocation(), 1, 1, 0, currentRightHandWeapon->GetWeaponFireSoundAttenuation());
+				UGameplayStatics::SpawnEmitterAttached(currentRightHandWeapon->GetWeaponMuzzleParticle(), currentRightHandWeapon->GetWeaponMesh(), "Muzzle",muzzleSocketTransform.GetLocation(), FP_Camera->GetComponentRotation(), FVector(1, 1, 1), EAttachLocation::Type::KeepWorldPosition);
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), currentRightHandWeapon->GetWeaponFireSound(currentRightHandWeapon->GetWeaponCosmetics().MuzzleType), GetActorLocation(), 1, 1, 0, currentRightHandWeapon->GetWeaponFireSoundAttenuation());
 				currentRightHandWeapon->PlayWeaponFireAnimation();
+				TP_Gun->PlayAnimation(currentRightHandWeapon->GetWeaponFireAnimation(), false);
 				SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->FireSpreadCrossHair);
+				bulletCount++;
 			}
 			//DrawDebugBox(GetWorld(), ResultHit.ImpactPoint, FVector(3, 3, 3), FColor::Red, false, 3.f);
 		}else {
@@ -410,7 +422,10 @@ void ASoldier::OnFireReleased(){
 
 void ASoldier::Reload() {
 	if (currentRightHandWeapon) {
-		if (currentRightHandWeapon->GetTotalAmmo() != 0) {
+		printf(FColor::Yellow, "shotBullet - bulletCount = %i", shotBullet - bulletCount);
+		if (currentRightHandWeapon->GetTotalAmmo() != 0 && shotBullet - bulletCount != 0) {
+			shotBullet = 0;
+			bulletCount = 0;
 			bReloading = true;
 			printf(FColor::Yellow, "bReloading -> %i", bReloading);
 			FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPReloadAnimation());
@@ -419,27 +434,107 @@ void ASoldier::Reload() {
 	}
 }
 
-void ASoldier::WeaponCustomizeAnimation(){
+void ASoldier::WeaponCosmeticAnimation(){
 	if (currentRightHandWeapon) {
 		UAnimMontage *CustomizeAnimMontage = LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_Rifle_Customize"));
 		if (!bWeaponCustomize){
+			currentRightHandWeapon->GetWeaponCosmeticWidget()->SetVisibility(true);
 			FP_Arms->GetAnimInstance()->Montage_Play(CustomizeAnimMontage,0.f);
 			UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/Rifle_Raise")));
-			WeaponCustomizeWidget = CreateWidget<UWeaponCustomizeWidget>(GetWorld()->GetFirstPlayerController(), TWeaponCustomizeWidget);
-			WeaponCustomizeWidget->AddToViewport();
 			APlayerController* ctrl = Cast<APlayerController>(GetController());
 			if (ctrl)
 				ctrl->bShowMouseCursor = true;
 			bWeaponCustomize = true;
 
 		}else {
+			currentRightHandWeapon->GetWeaponCosmeticWidget()->SetVisibility(false);
 			FP_Arms->GetAnimInstance()->Montage_Play(CustomizeAnimMontage,-1.f);
 			UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/Rifle_Lower")));
-			WeaponCustomizeWidget->RemoveFromParent();
 			APlayerController* ctrl = Cast<APlayerController>(GetController());
 			if (ctrl)
 				ctrl->bShowMouseCursor = false;
 			bWeaponCustomize = false;
 		}
 	}
+}
+
+void ASoldier::FirstWeapon() { // rifle
+	if (bIsSecondWeapon) {
+		bIsSecondWeapon = false;
+		FP_Arms->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_RifleEquip")));
+		GetMesh()->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_SwitchWeapon")));
+		currentRightHandWeapon = Cast<IBaseWeaponInterface>(FP_PrimaryGun->GetChildActor());
+		FP_PrimaryGun->SetVisibility(true);
+		FP_SecondaryGun->SetVisibility(false);
+		FP_PrimaryGun->GetChildrenComponents(true, GunChildComponents);
+
+		for (UStaticMeshComponent*& i : currentRightHandWeapon->GetWeaponCosmetics().CosmeticComponents) {
+			i->bOnlyOwnerSee = true;
+			i->SetCastShadow(false);
+		}
+
+		for (USceneComponent* component : GunChildComponents) {
+			if (USkeletalMeshComponent* componentMesh = Cast<USkeletalMeshComponent>(component)) {
+				TP_Gun->SetSkeletalMesh(componentMesh->SkeletalMesh);
+			}
+		}
+		SoldierInterfaceWidget->RemoveFromParent();
+		SoldierInterfaceWidget->AddToViewport();
+		FP_ArmVecStart = FVector(-0.172258, 2.895133, -162.847717);
+		FP_ArmRotStart = FRotator(0.00, -89.99, 0.00);
+		FP_Arms->SetRelativeLocationAndRotation(FP_ArmVecStart, FP_ArmRotStart);
+		if (SoldierInterfaceWidget->HPrimaryWeaponBox->GetVisibility() == ESlateVisibility::Hidden && SoldierInterfaceWidget->HSecondaryWeaponBox->GetVisibility() == ESlateVisibility::Hidden) {
+			SoldierInterfaceWidget->HPrimaryWeaponBox->SetVisibility(ESlateVisibility::Visible);
+			SoldierInterfaceWidget->HSecondaryWeaponBox->SetVisibility(ESlateVisibility::Visible);
+		}
+		UGameplayStatics::PlaySound2D(GetWorld(), LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Wavs/Pistol_Lower.Pistol_Lower")));
+		if (!bSoldierWidgetInterfaceSee) {
+			SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->SelectHideWeaponImages, 0, 1, EUMGSequencePlayMode::Reverse);
+			GetWorldTimerManager().SetTimer(T_SoldierWidgetInterfaceHandle, this, &ASoldier::SoldierInterfaceWidgetSetHide, 3, false);
+			bSoldierWidgetInterfaceSee = true;
+		}
+	}
+}
+
+void ASoldier::SecondWeapon() { // pistol
+	if (!bIsSecondWeapon) {
+		bIsSecondWeapon = true;
+		FP_Arms->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_PistolEquip")));
+		GetMesh()->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_SwitchWeapon")));
+		currentRightHandWeapon = Cast<IBaseWeaponInterface>(FP_SecondaryGun->GetChildActor());
+		FP_SecondaryGun->SetVisibility(true);
+		FP_PrimaryGun->SetVisibility(false);
+		FP_SecondaryGun->GetChildrenComponents(true, GunChildComponents);
+
+		for (UStaticMeshComponent* &i : currentRightHandWeapon->GetWeaponCosmetics().CosmeticComponents) {
+			i->bOnlyOwnerSee = true;
+			i->SetCastShadow(false);
+		}
+		for (USceneComponent* component : GunChildComponents) {
+			if (USkeletalMeshComponent* componentMesh = Cast<USkeletalMeshComponent>(component)) {
+				TP_Gun->SetSkeletalMesh(componentMesh->SkeletalMesh);
+			}
+		}
+
+		SoldierInterfaceWidget->RemoveFromParent();
+		SoldierInterfaceWidget->AddToViewport();
+		FP_ArmVecStart = FVector(-10.664922, 10.874342, -173.447189);
+		FP_ArmRotStart = FRotator(0.0f, -89.989906, -3.410630);
+		FP_Arms->SetRelativeLocationAndRotation(FP_ArmVecStart, FP_ArmRotStart);
+		if (SoldierInterfaceWidget->HPrimaryWeaponBox->GetVisibility() == ESlateVisibility::Hidden && SoldierInterfaceWidget->HSecondaryWeaponBox->GetVisibility() == ESlateVisibility::Hidden) {
+			SoldierInterfaceWidget->HPrimaryWeaponBox->SetVisibility(ESlateVisibility::Visible);
+			SoldierInterfaceWidget->HSecondaryWeaponBox->SetVisibility(ESlateVisibility::Visible);
+		}
+		UGameplayStatics::PlaySound2D(GetWorld(), LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Wavs/Pistol_Lower.Pistol_Lower")));
+		if (!bSoldierWidgetInterfaceSee) {
+			SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->SelectHideWeaponImages, 0, 1, EUMGSequencePlayMode::Reverse);
+			GetWorldTimerManager().SetTimer(T_SoldierWidgetInterfaceHandle, this, &ASoldier::SoldierInterfaceWidgetSetHide, 3, false);
+			bSoldierWidgetInterfaceSee = true;
+		}
+	}
+}
+
+void ASoldier::SoldierInterfaceWidgetSetHide() {
+	SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->SelectHideWeaponImages, 0, 1, EUMGSequencePlayMode::Forward);
+	bSoldierWidgetInterfaceSee = false;
 }

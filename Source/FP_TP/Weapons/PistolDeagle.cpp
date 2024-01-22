@@ -1,24 +1,23 @@
-#include "RifleAK.h"
-#include "Magazine_AK47.h"
-#include "../Bullets/EjectBullet.h"
-#include "../Bullets/Bullet762.h"
-
+#include "PistolDeagle.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Magazine_PistolDeagle.h"
+#include "../Bullets/EjectBullet.h"
+#include "../Bullets/Bullet9.h"
 
 #define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 2, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
-ARifleAK::ARifleAK() {
+APistolDeagle::APistolDeagle(){
 	PrimaryActorTick.bCanEverTick = false;
-	const static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMesh(TEXT("/Game/Weapons/Meshes/Ka47/SK_KA47"));
-	const static ConstructorHelpers::FObjectFinder<UParticleSystem> WeaponMuzzle(TEXT("/Game/Weapons/FX/P_AssaultRifle_MuzzleFlash"));
-	const static ConstructorHelpers::FObjectFinder<UTexture2D> WeaponTexture(TEXT("/Game/AK47"));
+	const static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMesh(TEXT("/Game/Weapons/Meshes/Pistol/Pistols_A"));
+	const static ConstructorHelpers::FObjectFinder<UParticleSystem> WeaponMuzzle(TEXT("/Game/Weapons/FX/P_Pistol_MuzzleFlash_01"));
+	const static ConstructorHelpers::FObjectFinder<UTexture2D> WeaponTexture(TEXT("/Game/PistolDeagle"));
 	const static ConstructorHelpers::FClassFinder<UUserWidget> GetWeaponCustomizeWidget(TEXT("/Game/Widgets/BP_WeaponCustomizationWidget"));
 	widgetClass = GetWeaponCustomizeWidget.Class;
 
-	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("AK47_Mesh"));
+	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PistolDeagle_Mesh"));
 	weaponMesh->SetupAttachment(GetRootComponent());
 	weaponMesh->SetSkeletalMesh(WeaponMesh.Object);
 
@@ -30,19 +29,16 @@ ARifleAK::ARifleAK() {
 	widgetComponent->SetRelativeScale3D(FVector(0.044720, 0.044720, 0.044720));
 	widgetComponent->SetVisibility(false);
 
-	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_SightMesh"));
+	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PistolDeagle_SightMesh"));
 	sightMesh->SetupAttachment(weaponMesh, FName("Sight"));
-	sightMesh->SetStaticMesh(nullptr);
 	sightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_MuzzleMesh"));
+	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PistolDeagle_MuzzleMesh"));
 	muzzleMesh->SetupAttachment(weaponMesh, FName("Muzzle"));
-	muzzleMesh->SetStaticMesh(nullptr);
 	muzzleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_GripMesh"));
+	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PistolDeagle_GripMesh"));
 	gripMesh->SetupAttachment(weaponMesh, FName("Grip"));
-	gripMesh->SetStaticMesh(nullptr);
 	gripMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	meshObject = WeaponMesh.Object;
@@ -54,35 +50,31 @@ ARifleAK::ARifleAK() {
 	//cosmetics.CosmeticComponents.Add(gripMesh);
 }
 
-void ARifleAK::SetWeaponCosmetics(FWeaponCosmetics weaponCosmetics){
+void APistolDeagle::SetWeaponCosmetics(FWeaponCosmetics weaponCosmetics){
 	cosmetics = weaponCosmetics;
 	sightMesh->SetStaticMesh(cosmetics.SightMesh);
 	muzzleMesh->SetStaticMesh(cosmetics.MuzzleMesh);
 }
 
-void ARifleAK::BeginPlay() {
-	Super::BeginPlay();
-}
+void APistolDeagle::BeginPlay() { Super::BeginPlay(); }
 
-void ARifleAK::Tick(float DeltaTime) {
-	Super::Tick(DeltaTime);
-}
+void APistolDeagle::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
 
-UClass* ARifleAK::GetWeaponBulletClass() {
-	return ABullet762::StaticClass();
-}
+UClass* APistolDeagle::GetWeaponBulletClass() { return ABullet9::StaticClass(); }
+UClass* APistolDeagle::GetWeaponMagazineClass() { return AMagazine_PistolDeagle::StaticClass(); }
 
-void ARifleAK::WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) {
+void APistolDeagle::WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) {
 	if (!bSoldierAimDownSight) {
 		Trace.Y += Trace.Y * FMath::RandRange(0.20f, -0.20f);
-		Trace.Z += Trace.Z * FMath::RandRange(0.20f, -0.50f);
-	}else {
+		Trace.Z += Trace.Z * FMath::RandRange(0.20f, -0.20f);
+	}
+	else {
 		Trace.Y += Trace.Y * FMath::RandRange(0.0f, 0.01f);
 		Trace.Z += Trace.Z * FMath::RandRange(0.0f, 0.01f);
 	}
 }
 
-void ARifleAK::ReloadWeapon() {
+void APistolDeagle::ReloadWeapon() {
 	if (bulletShot < bulletInMag) {
 		const short missingBullet = bulletInMag - bulletShot;
 		const short willAddBullet = FMath::Min<short>(missingBullet, totalBullet);
@@ -93,20 +85,23 @@ void ARifleAK::ReloadWeapon() {
 	}
 }
 
-FVector ARifleAK::GetWeaponInFPLocation(EWeaponSightType SightType){
-	switch (SightType){
+FVector APistolDeagle::GetWeaponInFPLocation(EWeaponSightType SightType) {
+	switch (SightType) {
 		case EWeaponSightType::IRON_SIGHT:
-			return FVector(5.976045, -15.000009, -159.173096);
-		
+			sightType = SightType;
+			return FVector(12, 10.72, -168.912973);
+
 		case EWeaponSightType::RED_DOT:
-			return FVector(5.976032, -15.000015, -161.336090); //-> With red dot
-		
+			sightType = SightType;
+			return FVector(12, 10.8, -170.812973);
+
 		default:
 			return FVector::ZeroVector;
 	}
+
 }
 
-UTexture2D* ARifleAK::GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) {
+UTexture2D* APistolDeagle::GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFireMode) {
 	switch (CurrentWeaponFireMode) {
 	case EWeaponFireModes::AUTO_MODE:
 		return LoadObject<UTexture2D>(nullptr, TEXT("/Game/Auto_bullet"));
@@ -122,48 +117,44 @@ UTexture2D* ARifleAK::GetWeaponFireModeTexture(EWeaponFireModes CurrentWeaponFir
 	}
 }
 
-USoundAttenuation* ARifleAK::GetWeaponFireSoundAttenuation() {
+USoundAttenuation* APistolDeagle::GetWeaponFireSoundAttenuation() {
 	return LoadObject<USoundAttenuation>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Attenuation/WeaponShot_att"));
 }
 
-USoundBase* ARifleAK::GetWeaponFireSound(EWeaponMuzzleType MuzzleType) {
-	switch (MuzzleType){
-		case EWeaponMuzzleType::SUPPRESSOR:
-			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle_FireSuppressor"));
+USoundBase* APistolDeagle::GetWeaponFireSound(EWeaponMuzzleType MuzzleType) {
+	switch (MuzzleType) {
+	case EWeaponMuzzleType::SUPPRESSOR:
+		return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol_Fire_Suppressor_Sound"));
 
-		case EWeaponMuzzleType::NORMAL:
-			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/AK47_FireSound"));
-		default:
-			return nullptr;
+	case EWeaponMuzzleType::NORMAL:
+		return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Cues/PistolA_Fire_Cue"));
+
+	default:
+		return nullptr;
 	}
 }
 
-UAnimMontage* ARifleAK::GetWeaponInFPFireAnimation() {
-	return LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_RifleFire"));;
+UAnimMontage* APistolDeagle::GetWeaponInFPFireAnimation() {
+	return LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/AnimSequance/FP_Pistol_Fire"));;
 }
 
-UAnimMontage* ARifleAK::GetWeaponInFPReloadAnimation(void) {
-	return LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_RifleReload_AK47"));
+UAnimMontage* APistolDeagle::GetWeaponInFPReloadAnimation() {
+	return LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_A_PistolReload_Deagle"));
 }
 
-UAnimMontage* ARifleAK::GetWeaponInTPReloadAnimation(void) {
-	return  LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_RifleReload"));
+UAnimMontage* APistolDeagle::GetWeaponInTPReloadAnimation(void) {
+	return  LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_PistolReload"));
 }
 
-UAnimationAsset* ARifleAK::GetWeaponFireAnimation(){
-	return LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/AK47_SetupShell"));
-}
-
-UAnimMontage* ARifleAK::GetWeaponInTPFireAnimMontage(void) {
+UAnimMontage* APistolDeagle::GetWeaponInTPFireAnimMontage(void) {
 	return  LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_RifleFire"));
 }
 
-UClass* ARifleAK::GetWeaponMagazineClass() {
-	UClass* magazine = AMagazine_AK47::StaticClass();
-	return magazine;
+UAnimationAsset* APistolDeagle::GetWeaponFireAnimation(){
+	return LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/PistolDeagle_Fire"));
 }
 
-void ARifleAK::SpawnEjectBullet() {
+void APistolDeagle::SpawnEjectBullet() {
 	FActorSpawnParameters params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	const FTransform makeTransform = FTransform(GetWeaponMesh()->GetSocketRotation("ejectBullet"), GetWeaponMesh()->GetSocketLocation("ejectBullet"), FVector(1, 1, 1));
@@ -174,10 +165,10 @@ void ARifleAK::SpawnEjectBullet() {
 	}
 }
 
-void ARifleAK::PlayWeaponFireAnimation() {
-	weaponMesh->PlayAnimation(LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/AK47_Fire")), false);
+void APistolDeagle::PlayWeaponFireAnimation() {
+	weaponMesh->PlayAnimation(LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/PistolDeagle_Fire")), false);
 }
 
-void ARifleAK::PlayWeaponShellSetupAnimation(){
-	weaponMesh->PlayAnimation(LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/AK47_SetupShell")), false);
+void APistolDeagle::PlayWeaponShellSetupAnimation() {
+	weaponMesh->PlayAnimation(LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/PistolEagle_Reload")), false);
 }

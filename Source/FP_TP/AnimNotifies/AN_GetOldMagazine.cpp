@@ -1,10 +1,10 @@
-#include "FP_Rifle_AN_GetOldMagazine.h"
+#include "AN_GetOldMagazine.h"
 #include "../Soldier/Soldier.h"
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Weapons/BaseMagazine.h"
 #include "Kismet/GameplayStatics.h"
 
-void UFP_Rifle_AnimNotifyGetOldMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
+void UAN_GetOldMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
 	Super::Notify(MeshComp, Animation);
 	Soldier = Cast<ASoldier>(MeshComp->GetOwner());
 	if (Soldier) {
@@ -13,7 +13,7 @@ void UFP_Rifle_AnimNotifyGetOldMagazine::Notify(USkeletalMeshComponent* MeshComp
 		const FTransform LeftHandSocketTransform = Soldier->GetFPArm()->GetSocketTransform(FName("leftHand"));
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		ABaseMagazine *magazine = MeshComp->GetOwner()->GetWorld()->SpawnActor<ABaseMagazine>(Soldier->GetCurrentFPRightHandWeapon()->GetWeaponMagazine(), LeftHandSocketTransform, SpawnParams);
+		ABaseMagazine *magazine = MeshComp->GetOwner()->GetWorld()->SpawnActor<ABaseMagazine>(Soldier->GetCurrentFPRightHandWeapon()->GetWeaponMagazineClass(), LeftHandSocketTransform, SpawnParams);
 		if (magazine) {
 			magazine->SetMagazineMesh(EWeaponMagazineType::EMPTY);
 			magazine->GetMagazineMesh()->AttachToComponent(Soldier->GetFPArm(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("leftHand"));

@@ -18,9 +18,10 @@ void UWeaponCustomizeWidget::NativeOnInitialized(){
 
 void UWeaponCustomizeWidget::SetSelectSuppressor(){
 	if (GameInstance->SoldierRef) {
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponMuzzleType(EWeaponMuzzleType::SUPPRESSOR);
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCustomizeMuzzle()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Accessories/SM_Suppressor5")));
-		GameInstance->SoldierRef->GetTPGunMuzzleMesh()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Accessories/SM_Suppressor5")));
+		FWeaponCosmetics cosmetic = GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCosmetics();
+		cosmetic.MuzzleMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Accessories/SM_Suppressor5"));
+		cosmetic.MuzzleType = EWeaponMuzzleType::SUPPRESSOR;
+		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponCosmetics(cosmetic);
 		UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Wavs/Pistol_ReloadMagEject01")));
 		SelectSuppressor->SetIsEnabled(false);
 		UnSelectSuppressor->SetIsEnabled(true);
@@ -29,9 +30,10 @@ void UWeaponCustomizeWidget::SetSelectSuppressor(){
 
 void UWeaponCustomizeWidget::SetUnSelectSuppressor(){
 	if (GameInstance->SoldierRef) {
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponMuzzleType(EWeaponMuzzleType::NORMAL);
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCustomizeMuzzle()->SetStaticMesh(nullptr);
-		GameInstance->SoldierRef->GetTPGunMuzzleMesh()->SetStaticMesh(nullptr);
+		FWeaponCosmetics cosmetic = GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCosmetics();
+		cosmetic.MuzzleMesh = nullptr;
+		cosmetic.MuzzleType = EWeaponMuzzleType::NORMAL;
+		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponCosmetics(cosmetic);
 		UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Wavs/Pistol_ReloadMagEject02")));
 		SelectSuppressor->SetIsEnabled(true);
 		UnSelectSuppressor->SetIsEnabled(false);
@@ -40,9 +42,10 @@ void UWeaponCustomizeWidget::SetUnSelectSuppressor(){
 
 void UWeaponCustomizeWidget::SetSelectRedDotSight(){
 	if (GameInstance->SoldierRef) {
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponSightType(EWeaponSightType::RED_DOT);
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCustomizeSight()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Accessories/SM_T4_Sight")));
-		GameInstance->SoldierRef->GetTPGunSightMesh()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Accessories/SM_T4_Sight")));
+		FWeaponCosmetics cosmetic = GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCosmetics();
+		cosmetic.SightMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Accessories/SM_T4_Sight"));
+		cosmetic.SightType = EWeaponSightType::RED_DOT;
+		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponCosmetics(cosmetic);
 		UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Wavs/Pistol_ReloadMagEject01")));
 		SelectRedDotSight->SetIsEnabled(false);
 		UnSelectSight->SetIsEnabled(true);
@@ -51,9 +54,10 @@ void UWeaponCustomizeWidget::SetSelectRedDotSight(){
 
 void UWeaponCustomizeWidget::SetUnSelectSight(){
 	if (GameInstance->SoldierRef) {
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponSightType(EWeaponSightType::IRON_SIGHT);
-		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCustomizeSight()->SetStaticMesh(nullptr);
-		GameInstance->SoldierRef->GetTPGunSightMesh()->SetStaticMesh(nullptr);
+		FWeaponCosmetics cosmetic = GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponCosmetics();
+		cosmetic.SightMesh = nullptr;
+		cosmetic.SightType = EWeaponSightType::IRON_SIGHT;
+		GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->SetWeaponCosmetics(cosmetic);
 		UGameplayStatics::PlaySound2D(this, LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Pistol/Wavs/Pistol_ReloadMagEject02")));
 		SelectRedDotSight->SetIsEnabled(true);
 		UnSelectSight->SetIsEnabled(false);

@@ -27,7 +27,7 @@ class FP_TP_API ARifleMAC11 : public AActor{
 		//virtual void WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) override;
 		//virtual FORCEINLINE short GetCurrentAmmo() override { return bulletShot; }
 		//virtual FORCEINLINE short GetTotalAmmo() override { return totalBullet; }
-		//virtual FORCEINLINE void SetCurrentAmmo(short BulletShot) override { bulletShot = BulletShot; }
+		//virtual FORCEINLINE void SetCurrentAmmo(uint8 BulletShot) override { bulletShot = BulletShot; }
 		//virtual void ReloadWeapon() override;
 		//virtual const char* GetWeaponName() override { return "MAC-11"; }
 		//virtual FORCEINLINE FVector GetWeaponInFPLocation() override  { return FVector(); }
@@ -39,9 +39,9 @@ class FP_TP_API ARifleMAC11 : public AActor{
 		//virtual UAnimMontage* GetWeaponInFPFireAnimation() override;
 		//virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
 		//virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
-		//virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
+		//virtual UAnimMontage* GetWeaponInTPFireAnimMontage() override;
 		//virtual FORCEINLINE const char* GetWeaponMagazineBoneName() override { return ""; }
-		//virtual UClass* GetWeaponMagazineUClass() override;
+		//virtual UClass* GetWeaponMagazineClassUClass() override;
 		//virtual UStaticMeshComponent* GetWeaponMagazineMesh() override;
 
 	private:

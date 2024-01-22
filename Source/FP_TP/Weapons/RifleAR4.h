@@ -12,8 +12,11 @@ class UParticleSystem;
 class UTexture2D;
 class USoundAttenuation;
 class UStaticMeshComponent;
+class UWidgetComponent;
 class AMagazine_AR4;
 class IBaseMagazineInterface;
+
+struct FWeaponCosmetics;
 
 UCLASS()
 class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
@@ -28,7 +31,7 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		virtual void WeaponSpreadSize(FVector& Trace, bool bSoldierAimDownSight) override;
 		virtual FORCEINLINE short GetCurrentAmmo() override { return bulletShot; }
 		virtual FORCEINLINE short GetTotalAmmo() override { return totalBullet; }
-		virtual FORCEINLINE void SetCurrentAmmo(short BulletShot) override { bulletShot = BulletShot; }
+		virtual FORCEINLINE void SetCurrentAmmo(uint8 BulletShot) override { bulletShot = BulletShot; }
 		virtual void ReloadWeapon() override;
 		virtual FORCEINLINE const char* GetWeaponName() override { return "AR4"; }
 		virtual FVector GetWeaponInFPLocation(EWeaponSightType SightType) override;
@@ -40,21 +43,17 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		virtual UAnimMontage* GetWeaponInFPFireAnimation() override;
 		virtual UAnimMontage* GetWeaponInFPReloadAnimation() override;
 		virtual UAnimMontage* GetWeaponInTPReloadAnimation() override;
-		virtual UAnimMontage* GetWeaponInTPFireAnimation() override;
+		virtual UAnimMontage* GetWeaponInTPFireAnimMontage() override;
+		virtual UAnimationAsset* GetWeaponFireAnimation() override;
 		virtual FORCEINLINE const char* GetWeaponMagazineBoneName() override { return "b_gun_mag"; }
-		virtual UClass* GetWeaponMagazine() override;
+		virtual UClass* GetWeaponMagazineClass() override;
 		virtual FORCEINLINE EBulletsEjectType GetEjectBulletType() override { return EBulletsEjectType::EJECT_556; }
 		virtual void SpawnEjectBullet() override;
 		virtual void PlayWeaponFireAnimation() override;
 		virtual FORCEINLINE void PlayWeaponShellSetupAnimation() override {}
-		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeSight() override { return sightMesh; }
-		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeGrip() override { return gripMesh; }
-		virtual FORCEINLINE UStaticMeshComponent* GetWeaponCustomizeMuzzle() override { return muzzleMesh; }
-		virtual FORCEINLINE EWeaponSightType GetWeaponSightType() override { return sightType; }
-		virtual FORCEINLINE EWeaponMuzzleType GetWeaponMuzzleType() override { return muzzleType; }
-		virtual FORCEINLINE void SetWeaponMuzzleType(EWeaponMuzzleType MuzzleType) override { muzzleType = MuzzleType; }
-		virtual FORCEINLINE void SetWeaponSightType(EWeaponSightType SightType) override { sightType = SightType; }
-		virtual FORCEINLINE FTransform GetWeaponLHandSocketTransform() override { return weaponMesh->GetSocketTransform(FName("LeftHandSocket")); }
+		virtual void SetWeaponCosmetics(FWeaponCosmetics weaponCosmetics) override;
+		virtual FORCEINLINE FWeaponCosmetics GetWeaponCosmetics() override { return cosmetics; };
+		virtual FORCEINLINE UWidgetComponent* GetWeaponCosmeticWidget() override { return widgetComponent; }
 
 	private:
 		GENERATED_BODY()
@@ -73,15 +72,21 @@ class FP_TP_API ARifleAR4 : public AActor, public IBaseWeaponInterface{
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* gripMesh;
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UWidgetComponent* widgetComponent;
+
 		USkeletalMesh *meshObject;
 		UParticleSystem *MuzzleParticle;
 		UTexture2D *weaponTexture;
 		EWeaponFireModes FireMode;
 		EWeaponSightType sightType;
 		EWeaponMuzzleType muzzleType;
+		FWeaponCosmetics cosmetics;
 
 		short bulletShot = 35;
 		short bulletInMag = 35;
 		short totalBullet = 120;
 		short remainBullet;
+
+		TSubclassOf<class UUserWidget> widgetClass;
 };

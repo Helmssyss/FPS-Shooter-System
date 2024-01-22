@@ -36,6 +36,18 @@ class FP_TP_API USoldierAnimInstance : public UAnimInstance{
 		UPROPERTY(BlueprintReadOnly, Category = Soldier)
 		bool soldierWeaponCustomize;
 
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		bool soldierSprint;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		bool soldierIsSwitchSecondWeapon;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		float soldierWeaponClipDistanceLast;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		float soldierWeaponClipDistanceCurrent;
+
 	private:
 		GENERATED_BODY()
 		virtual void NativeUpdateAnimation(float DeltaSeconds) override;
@@ -44,5 +56,11 @@ class FP_TP_API USoldierAnimInstance : public UAnimInstance{
 		void WeaponSway(ASoldier* soldier);
 
 		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
-		FRotator SoldierHeadRotation;
+		FRotator soldierHeadRotation;
+
+		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		FTransform leftFPHandSocketTransform;
+
+		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		FTransform leftTPHandSocketTransform;
 };

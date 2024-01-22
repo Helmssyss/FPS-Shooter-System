@@ -5,20 +5,24 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
+#include "Components/HorizontalBox.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Components/CanvasPanelSlot.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 3, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
 void USoldierInterfaceWidget::NativeConstruct(){
 	Super::NativeConstruct();
+
 	GameInstance = Cast<UFP_TPGameInstance>(GetGameInstance());
 	SlotTop = Cast<UCanvasPanelSlot>(SB_Top->Slot);
 	SlotBottom = Cast<UCanvasPanelSlot>(SB_Bottom->Slot);
 	SlotLeft = Cast<UCanvasPanelSlot>(SB_Left->Slot);
 	SlotRight = Cast<UCanvasPanelSlot>(SB_Right->Slot);
+	HPrimaryWeaponBox->SetVisibility(ESlateVisibility::Hidden);
+	HSecondaryWeaponBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void USoldierInterfaceWidget::NativeOnInitialized(){
@@ -26,7 +30,8 @@ void USoldierInterfaceWidget::NativeOnInitialized(){
 	
 	TotalBulletCount->TextDelegate.BindUFunction(this, "ViewTotalBulletCount");
 	CurrentBulletCount->TextDelegate.BindUFunction(this, "ViewCurrentBulletCount");
-	WeaponImage->BrushDelegate.BindUFunction(this, "ViewWeaponImage");
+	PrimaryWeaponImage->BrushDelegate.BindUFunction(this, "ViewPrimaryWeaponImage");
+	SecondaryWeaponImage->BrushDelegate.BindUFunction(this, "ViewSecondaryWeaponImage");
 	FireModeImage->BrushDelegate.BindUFunction(this, "ViewWeaponFireMode");
 	GetWorld()->GetTimerManager().SetTimer(TCrosshairHandle, this, &USoldierInterfaceWidget::DynamicCrosshair, 1 / UpdatedPerSecond, true);
 }
@@ -46,13 +51,29 @@ FText USoldierInterfaceWidget::ViewCurrentBulletCount(){
 	return FText::GetEmpty();
 }
 
-FSlateBrush USoldierInterfaceWidget::ViewWeaponImage(){
+FSlateBrush USoldierInterfaceWidget::ViewPrimaryWeaponImage(){
 	if (GameInstance)
 		if (GameInstance->SoldierRef) {
-			FSlateBrush Brush = WeaponImage->Brush;
-			Brush.SetResourceObject(GameInstance->SoldierRef->GetCurrentFPRightHandWeapon()->GetWeaponTexture());
-			WeaponImage->SetBrush(Brush);
-			return Brush;
+			if (IBaseWeaponInterface* Primary = Cast<IBaseWeaponInterface>(GameInstance->SoldierRef->GetFPPrimaryGun()->GetChildActor())) {
+				FSlateBrush Brush = PrimaryWeaponImage->Brush;
+				Brush.SetResourceObject(Primary->GetWeaponTexture());
+				PrimaryWeaponImage->SetBrush(Brush);
+				return Brush;
+			}
+		}
+	FSlateBrush _;
+	return _;
+}
+
+FSlateBrush USoldierInterfaceWidget::ViewSecondaryWeaponImage(){
+	if (GameInstance)
+		if (GameInstance->SoldierRef) {
+			if (IBaseWeaponInterface* Secondary = Cast<IBaseWeaponInterface>(GameInstance->SoldierRef->GetFPSecondaryGun()->GetChildActor())) {
+				FSlateBrush Brush = SecondaryWeaponImage->Brush;
+				Brush.SetResourceObject(Secondary->GetWeaponTexture());
+				SecondaryWeaponImage->SetBrush(Brush);
+				return Brush;
+			}
 		}
 	FSlateBrush _;
 	return _;
@@ -71,6 +92,9 @@ FSlateBrush USoldierInterfaceWidget::ViewWeaponFireMode(){
 }
 
 void USoldierInterfaceWidget::DynamicCrosshair() {
+	if (GameInstance->SoldierRef->GetCurrentWeaponIsClipping()) CancelImage->SetVisibility(ESlateVisibility::Visible);
+	else CancelImage->SetVisibility(ESlateVisibility::Hidden);
+	
 	if (SB_Top && SB_Bottom && SB_Left && SB_Right) {
 		const float SoldierVelocity = GameInstance->SoldierRef->GetCharacterMovement()->Velocity.Size();
 		float FixedVelocity = UKismetMathLibrary::NormalizeToRange(SoldierVelocity, 0.0f, MaxVelocity);

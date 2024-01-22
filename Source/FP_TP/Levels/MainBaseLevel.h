@@ -20,9 +20,10 @@ class FP_TP_API AMainBaseLevel : public ALevelScriptActor{
 		virtual void BeginPlay() override;
 		
 		void SetSpawnWeapon(UFP_TPGameInstance* &gameInstance, APlayerController* &playerController);
+		void SetWeaponSettings(TArray<USceneComponent*> &ChildComponents);
 
 		ASoldier* spawnedSoldier;
 		USkeletalMeshComponent *weaponMesh;
-		IBaseWeaponInterface *weapon;
-	
+		UClass *rifleGun;
+		UClass *pistolGun;
 };

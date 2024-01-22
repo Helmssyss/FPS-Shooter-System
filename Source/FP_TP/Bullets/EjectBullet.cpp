@@ -65,6 +65,10 @@ void AEjectBullet::SetEjectBulletMesh(EBulletsEjectType ejectType) {
 			EjectMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Ammunition/SM_Shell_762x39_Empty")));
 			break;
 		}
+		case EBulletsEjectType::EJECT_9:{
+			EjectMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapons/Meshes/Ammunition/SM_Shell_9mm_Empty")));
+			break;
+		}
 		default:
 			break;
 	}

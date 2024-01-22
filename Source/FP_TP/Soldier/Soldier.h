@@ -15,6 +15,9 @@ class USoldierInterfaceWidget;
 class UWeaponCustomizeWidget;
 class ABaseMagazine;
 class IBaseWeaponInterface;
+class UChildActorComponent;
+class USceneComponent;
+class UStaticMeshComponent;
 
 UCLASS()
 class FP_TP_API ASoldier : public ACharacter{
@@ -27,15 +30,18 @@ class FP_TP_API ASoldier : public ACharacter{
 		FORCEINLINE IBaseWeaponInterface *GetCurrentFPRightHandWeapon() const { return currentRightHandWeapon; }
 		FORCEINLINE void SetPreviousMagazineOwner(ABaseMagazine *magazine) { currentGetMagazineOwner = magazine; }
 		FORCEINLINE ABaseMagazine* GetPreviousMagazineOwner() { return currentGetMagazineOwner; }
-		FORCEINLINE UStaticMeshComponent* GetTPGunSightMesh() const { return TP_SightMesh; }
-		FORCEINLINE UStaticMeshComponent* GetTPGunMuzzleMesh() const { return TP_MuzzleMesh; }
-		FORCEINLINE UStaticMeshComponent* GetTPGunGripMesh() const { return TP_GripMesh; }
 		FORCEINLINE void SetReloadState(bool bReloadState) { bReloading = bReloadState; }
 		FORCEINLINE bool GetReloadState() { return bReloading; }
-		FORCEINLINE float GetMoveSide() const { return moveSide; }
 		FORCEINLINE float GetMouseX() const { return yawInput; }
 		FORCEINLINE float GetMouseY() const { return pitchInput; }
 		FORCEINLINE bool GetWeaponCustomizeState() const { return bWeaponCustomize; }
+		FORCEINLINE bool GetSprintState() const { return bSprint; }
+		FORCEINLINE bool GetSwitchWeaponState() const { return bIsSecondWeapon; }
+
+		FORCEINLINE UChildActorComponent *GetFPPrimaryGun() const { return FP_PrimaryGun; }
+		FORCEINLINE UChildActorComponent* GetFPSecondaryGun() const { return FP_SecondaryGun; }
+		FORCEINLINE float GetCurrentWeaponClipDistance() const { return clipDistance; }
+		FORCEINLINE bool GetCurrentWeaponIsClipping() const { return bWeaponIsClipping; }
 
 	private:
 		GENERATED_BODY()
@@ -60,11 +66,12 @@ class FP_TP_API ASoldier : public ACharacter{
 		void RecoilStart();
 		void RecoilReverse();
 		void RecoilInterpolate(float DeltaTime);
-		void WeaponCustomizeAnimation();
-		void SetMouseXYForWeaponSway();
+		void WeaponCosmeticAnimation();
+		void FirstWeapon();
+		void SecondWeapon();
 		FORCEINLINE FVector SelectVector(const FVector &A, const FVector &B, const bool &bSelectA) const { return bSelectA ? A : B; }
-		FORCEINLINE FRotator FindLookAtRotation(const FVector &Start, const FVector &Target) { return FRotationMatrix::MakeFromX(Target - Start).Rotator(); }
-		FORCEINLINE FRotator DeltaRotator(const FRotator& A, const FRotator& B) { return (A - B).GetNormalized(); }
+		FORCEINLINE FRotator FindLookAtRotation(const FVector &Start, const FVector &Target) const { return FRotationMatrix::MakeFromX(Target - Start).Rotator(); }
+		FORCEINLINE FRotator DeltaRotator(const FRotator& A, const FRotator& B) const { return (A - B).GetNormalized(); }
 		
 		UFUNCTION()
 		void AimDownSightUpdate(float Alpha);
@@ -73,10 +80,16 @@ class FP_TP_API ASoldier : public ACharacter{
 		void OnAimDownSightFinished();
 
 		UFUNCTION()
+		void SoldierInterfaceWidgetSetHide();
+
+		UFUNCTION()
 		void RecoilStartPitch(float Alpha);
 
 		UFUNCTION()
 		void RecoilStartYaw(float Alpha);
+
+		UFUNCTION()
+		void WeaponClipping();
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		USpringArmComponent *FP_CameraBoom;
@@ -97,19 +110,13 @@ class FP_TP_API ASoldier : public ACharacter{
 		USkeletalMeshComponent* TP_Gun;
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* TP_SightMesh;
+		UChildActorComponent *FP_PrimaryGun;
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* TP_MuzzleMesh;
-
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* TP_GripMesh;
+		UChildActorComponent *FP_SecondaryGun;
 
 		UPROPERTY()
 		USoldierInterfaceWidget *SoldierInterfaceWidget;
-		
-		UPROPERTY()
-		UWeaponCustomizeWidget *WeaponCustomizeWidget;
 
 		UPROPERTY(EditAnywhere, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<USoldierInterfaceWidget> TSoldierInterfaceWidget;
@@ -134,32 +141,33 @@ class FP_TP_API ASoldier : public ACharacter{
 
 		FRotator RecoilStartRotation;
 		FRotator RecoilEndRotation;
-
 		float yawInput;
 		float pitchInput;
-		float moveSide;
+		float clipDistance;
 		const float BaseTurnRate = 45.f;
 		const float BaseLookUpRate = 45.f;
 		const float FOV_Start = 95.f;
-		const float FOV_End = 60.f;
-
-		const FVector FP_ArmVecStart = FVector(-0.172258, 2.895133, -162.847717);
-		const FRotator FP_ArmRotStart = FRotator(0.00, -89.99, 0.00);
-
+		const float FOV_End = 50.f;
+		FVector FP_ArmVecStart = FVector(-0.172258, 2.895133, -162.847717);
+		FRotator FP_ArmRotStart = FRotator(0.00, -89.99, 0.00);
 		bool bAimDownSight;
 		bool bSprint;
 		bool bWeaponCustomize;
 		bool bReloading;
-
+		bool bIsSecondWeapon;
+		bool bSoldierWidgetInterfaceSee;
+		bool bWeaponIsClipping;
+		uint8 shotBullet;
+		uint8 bulletCount;
 		IBaseWeaponInterface *currentRightHandWeapon;
 		ABaseMagazine* currentGetMagazineOwner;
-
 		FTimerHandle T_FP_ArmFireAnimationHandle;
 		FTimerHandle T_FireModeHandle;
 		FTimerHandle T_WeaponSwayHandle;
-
+		FTimerHandle T_SoldierWidgetInterfaceHandle;
+		FTimerHandle T_WeaponClippingHandle;
 		uint8 currentWeaponFireMode;
 		uint8 SemiAutoFireCount = 0;
-
+		TArray<USceneComponent*> GunChildComponents;
 		TSubclassOf<UCameraShakeBase> TCameraShake;
 };

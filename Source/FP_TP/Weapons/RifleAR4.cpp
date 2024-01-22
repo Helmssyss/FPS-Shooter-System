@@ -4,8 +4,11 @@
 #include "../Bullets/EjectBullet.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
+
 #include "Particles/ParticleSystem.h"
 #include "UObject/ConstructorHelpers.h"
+
 
 #define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 2, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
@@ -14,10 +17,20 @@ ARifleAR4::ARifleAR4(){
 	const static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMesh(TEXT("/Game/Weapons/Meshes/AR4/SK_AR4"));
 	const static ConstructorHelpers::FObjectFinder<UParticleSystem> WeaponMuzzle(TEXT("/Game/Weapons/FX/P_AssaultRifle_MuzzleFlash"));
 	const static ConstructorHelpers::FObjectFinder<UTexture2D> WeaponTexture(TEXT("/Game/AR4"));
+	const static ConstructorHelpers::FClassFinder<UUserWidget> GetWeaponCustomizeWidget(TEXT("/Game/Widgets/BP_WeaponCustomizationWidget"));
+	widgetClass = GetWeaponCustomizeWidget.Class;
 
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("AR4_Mesh"));
 	weaponMesh->SetupAttachment(GetRootComponent());
 	weaponMesh->SetSkeletalMesh(WeaponMesh.Object);
+	
+	widgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("widgetComponent"));
+	widgetComponent->SetupAttachment(weaponMesh);
+	widgetComponent->SetWidgetClass(widgetClass);
+	widgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	widgetComponent->SetRelativeLocation(FVector(3.984676, 12.445572, 7.446973));
+	widgetComponent->SetRelativeScale3D(FVector(0.044720, 0.044720, 0.044720));
+	widgetComponent->SetVisibility(false);
 
 	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_SightMesh"));
 	sightMesh->SetupAttachment(weaponMesh, FName("Sight"));
@@ -34,6 +47,15 @@ ARifleAR4::ARifleAR4(){
 	meshObject = WeaponMesh.Object;
 	MuzzleParticle = WeaponMuzzle.Object;
 	weaponTexture = WeaponTexture.Object;
+
+	cosmetics.CosmeticComponents.Add(sightMesh);
+	cosmetics.CosmeticComponents.Add(muzzleMesh);
+}
+
+void ARifleAR4::SetWeaponCosmetics(FWeaponCosmetics weaponCosmetics) {
+	cosmetics = weaponCosmetics;
+	sightMesh->SetStaticMesh(cosmetics.SightMesh);
+	muzzleMesh->SetStaticMesh(cosmetics.MuzzleMesh);
 }
 
 void ARifleAR4::BeginPlay(){
@@ -77,7 +99,7 @@ FVector ARifleAR4::GetWeaponInFPLocation(EWeaponSightType SightType){
 		
 		case EWeaponSightType::RED_DOT:
 			sightType = SightType;
-			return FVector(30.189329, -14.91, -162.600009);
+			return FVector(30.189329, -14.91, -165.600009);
 		
 		default:
 			return FVector::ZeroVector;
@@ -108,10 +130,10 @@ USoundAttenuation* ARifleAR4::GetWeaponFireSoundAttenuation(){
 USoundBase* ARifleAR4::GetWeaponFireSound(EWeaponMuzzleType MuzzleType){
 	switch (MuzzleType){
 		case EWeaponMuzzleType::SUPPRESSOR:
-			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/AR4_FireSuppressor"));
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle_FireSuppressor"));
 		
 		case EWeaponMuzzleType::NORMAL:
-			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Cues/RifleA_Fire_Cue"));
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/AR4_FireSound"));
 		
 		default:
 			return nullptr;
@@ -130,11 +152,15 @@ UAnimMontage* ARifleAR4::GetWeaponInTPReloadAnimation(void){
 	return  LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_RifleReload"));
 }
 
-UAnimMontage* ARifleAR4::GetWeaponInTPFireAnimation(void){
+UAnimationAsset* ARifleAR4::GetWeaponFireAnimation(){
+	return LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Weapons/Animation/AR4_Fire"));
+}
+
+UAnimMontage* ARifleAR4::GetWeaponInTPFireAnimMontage(void){
 	return  LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_RifleFire"));
 }
 
-UClass* ARifleAR4::GetWeaponMagazine(){
+UClass* ARifleAR4::GetWeaponMagazineClass(){
 	UClass* magazine = AMagazine_AR4::StaticClass();
 	return magazine;
 }

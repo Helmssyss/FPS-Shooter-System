@@ -1,4 +1,4 @@
-#include "FP_Rifle_AN_PlugMagazine.h"
+#include "AN_PlugMagazine.h"
 #include "../Soldier/Soldier.h"
 #include "../Weapons/BaseWeaponInterface.h"
 #include "../Weapons/BaseMagazine.h"
@@ -6,7 +6,7 @@
 
 #define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 2, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
-void UFP_Rifle_AN_PlugMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
+void UAN_PlugMagazine::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){
 	Super::Notify(MeshComp, Animation);
 	Soldier = Cast<ASoldier>(MeshComp->GetOwner());
 	if (Soldier) {

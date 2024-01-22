@@ -10,17 +10,26 @@ class USizeBox;
 class UCanvasPanelSlot;
 class UFP_TPGameInstance;
 class UWidgetAnimation;
+class UHorizontalBox;
 class ASoldier;
 
 UCLASS()
 class FP_TP_API USoldierInterfaceWidget : public UUserWidget{
 	
 	public:
+		void SetVisibleCrosshair(bool bIsVisible);
+
 		UPROPERTY(meta = (BindWidget))
-		UImage *WeaponImage;
+		UImage *SecondaryWeaponImage;
+
+		UPROPERTY(meta = (BindWidget))
+		UImage *PrimaryWeaponImage;
 
 		UPROPERTY(meta = (BindWidget))
 		UImage *FireModeImage;
+
+		UPROPERTY(meta = (BindWidget))
+		UImage *CancelImage;
 
 		UPROPERTY(meta = (BindWidget))
 		UTextBlock *TotalBulletCount;
@@ -43,12 +52,18 @@ class FP_TP_API USoldierInterfaceWidget : public UUserWidget{
 		UPROPERTY(Transient, meta = (BindWidgetAnim))
 		UWidgetAnimation *FireSpreadCrossHair;
 
-		float TestVelocity = 0.f;
+		UPROPERTY(Transient, meta = (BindWidgetAnim))
+		UWidgetAnimation *SelectHideWeaponImages;
+
+		UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+		UHorizontalBox *HPrimaryWeaponBox;
+
+		UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+		UHorizontalBox *HSecondaryWeaponBox;
+
 		float MaxVelocity = 350.f;
 		float MaxOffset = 100.f;
 		float UpdatedPerSecond = 60.f;
-
-		void SetVisibleCrosshair(bool bIsVisible);
 
 	private:
 		GENERATED_BODY()
@@ -63,7 +78,10 @@ class FP_TP_API USoldierInterfaceWidget : public UUserWidget{
 		FText ViewCurrentBulletCount();
 
 		UFUNCTION()
-		FSlateBrush ViewWeaponImage();
+		FSlateBrush ViewPrimaryWeaponImage();
+
+		UFUNCTION()
+		FSlateBrush ViewSecondaryWeaponImage();
 
 		UFUNCTION()
 		FSlateBrush ViewWeaponFireMode();

@@ -78,7 +78,7 @@ void ARifleMAC11::Tick(float DeltaTime){
 //	return nullptr;
 //}
 //
-//UAnimMontage* ARifleMAC11::GetWeaponInTPFireAnimation(void){
+//UAnimMontage* ARifleMAC11::GetWeaponInTPFireAnimMontage(void){
 //	return nullptr;
 //}
 //

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "../Weapons/BaseWeaponInterface.h"
 #include "WeaponCustomizeWidget.generated.h"
 
 class UButton;
@@ -39,8 +40,8 @@ class FP_TP_API UWeaponCustomizeWidget : public UUserWidget{
 		UFUNCTION()
 		void SetUnSelectSight();
 
-		UFP_TPGameInstance *GameInstance;
-
 		bool bSelectSuppressor;
 		bool bSelectSight;
+
+		UFP_TPGameInstance* GameInstance;
 };
