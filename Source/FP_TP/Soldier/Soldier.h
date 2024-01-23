@@ -37,11 +37,13 @@ class FP_TP_API ASoldier : public ACharacter{
 		FORCEINLINE bool GetWeaponCustomizeState() const { return bWeaponCustomize; }
 		FORCEINLINE bool GetSprintState() const { return bSprint; }
 		FORCEINLINE bool GetSwitchWeaponState() const { return bIsSecondWeapon; }
-
 		FORCEINLINE UChildActorComponent *GetFPPrimaryGun() const { return FP_PrimaryGun; }
 		FORCEINLINE UChildActorComponent* GetFPSecondaryGun() const { return FP_SecondaryGun; }
 		FORCEINLINE float GetCurrentWeaponClipDistance() const { return clipDistance; }
 		FORCEINLINE bool GetCurrentWeaponIsClipping() const { return bWeaponIsClipping; }
+		FORCEINLINE UStaticMeshComponent* GetTPGunSightMesh() const { return TP_SightMesh; }
+		FORCEINLINE UStaticMeshComponent* GetTPGunMuzzleMesh() const { return TP_MuzzleMesh; }
+		void SetSelectWeaponCosmetics();
 
 	private:
 		GENERATED_BODY()
@@ -114,6 +116,12 @@ class FP_TP_API ASoldier : public ACharacter{
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		UChildActorComponent *FP_SecondaryGun;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* TP_MuzzleMesh;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* TP_SightMesh;
 
 		UPROPERTY()
 		USoldierInterfaceWidget *SoldierInterfaceWidget;

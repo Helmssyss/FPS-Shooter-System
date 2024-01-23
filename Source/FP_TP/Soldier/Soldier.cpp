@@ -79,17 +79,33 @@ ASoldier::ASoldier(){
 	TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_GunMesh"));
 	TP_Gun->SetupAttachment(GetMesh(), FName("TP_rightHand"));
 
+	TP_SightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SightMesh"));
+	TP_SightMesh->SetupAttachment(TP_Gun, FName("Sight"));
+
+	TP_MuzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
+	TP_MuzzleMesh->SetupAttachment(TP_Gun, FName("Muzzle"));
+
 	GetMesh()->CastShadow = true;
 	GetMesh()->bOwnerNoSee = true;
 	GetMesh()->SetCastHiddenShadow(true);
+
 	FP_Arms->bOnlyOwnerSee = true;
 	FP_Arms->CastShadow = false;
+
 	FP_Foots->bOnlyOwnerSee = true;
 	FP_Foots->CastShadow = false;
+
 	FP_Legs->bOnlyOwnerSee = true;
 	FP_Legs->CastShadow = false;
+
 	TP_Gun->SetCastHiddenShadow(true);
 	TP_Gun->bOwnerNoSee = true;
+
+	TP_SightMesh->SetCastHiddenShadow(true);
+	TP_SightMesh->bOwnerNoSee = true;
+
+	TP_MuzzleMesh->SetCastHiddenShadow(true);
+	TP_MuzzleMesh->bOwnerNoSee = true;
 
 	ADS_Curve = GetADS_Curve.Object;
 	PitchCurve = GetRECOIL_PITCH_Curve.Object;
@@ -153,7 +169,7 @@ void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){
 		PlayerInputComponent->BindAction("OnFire", IE_Released, this, &ASoldier::OnFireReleased);
 		PlayerInputComponent->BindAction("FireMode", IE_Pressed, this, &ASoldier::FireMode);
 		PlayerInputComponent->BindAction("Reload - Interact", IE_Pressed, this, &ASoldier::Reload);
-		PlayerInputComponent->BindAction("WeaponCustomize", IE_Pressed, this, &ASoldier::WeaponCustomizeAnimation);
+		PlayerInputComponent->BindAction("WeaponCustomize", IE_Pressed, this, &ASoldier::WeaponCosmeticAnimation);
 		PlayerInputComponent->BindAction("FirstWeapon - Rifle", IE_Pressed, this, &ASoldier::FirstWeapon);
 		PlayerInputComponent->BindAction("SecondWeapon - Pistol", IE_Pressed, this, &ASoldier::SecondWeapon);
 
@@ -287,17 +303,17 @@ void ASoldier::WeaponClipping() {
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(this);
 
-		const short length = 100;
+		const uint8 length = 100;
 		const FVector start = FP_Camera->GetComponentLocation();
 		const FVector distance = FP_Camera->GetForwardVector() * length;
 		const FVector end = start + distance;
 
 		const bool isHit = GetWorld()->LineTraceSingleByChannel(ClipHit, start, end, ECollisionChannel::ECC_Camera, QueryParams);
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 4);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 4);
 		if (isHit) {
 			bWeaponIsClipping = true;
 			clipDistance = FVector::Distance(ClipHit.Location, start) / length;
-			DrawDebugBox(GetWorld(), ClipHit.ImpactPoint, FVector(3, 3, 3), FColor::Green, false, 0.02f);
+			//DrawDebugBox(GetWorld(), ClipHit.ImpactPoint, FVector(3, 3, 3), FColor::Green, false, 0.02f);
 		}
 		else {
 			clipDistance = 1.f;
@@ -466,18 +482,8 @@ void ASoldier::FirstWeapon() { // rifle
 		currentRightHandWeapon = Cast<IBaseWeaponInterface>(FP_PrimaryGun->GetChildActor());
 		FP_PrimaryGun->SetVisibility(true);
 		FP_SecondaryGun->SetVisibility(false);
-		FP_PrimaryGun->GetChildrenComponents(true, GunChildComponents);
-
-		for (UStaticMeshComponent*& i : currentRightHandWeapon->GetWeaponCosmetics().CosmeticComponents) {
-			i->bOnlyOwnerSee = true;
-			i->SetCastShadow(false);
-		}
-
-		for (USceneComponent* component : GunChildComponents) {
-			if (USkeletalMeshComponent* componentMesh = Cast<USkeletalMeshComponent>(component)) {
-				TP_Gun->SetSkeletalMesh(componentMesh->SkeletalMesh);
-			}
-		}
+		TP_Gun->SetSkeletalMesh(currentRightHandWeapon->GetWeaponMeshObject());
+		SetSelectWeaponCosmetics();
 		SoldierInterfaceWidget->RemoveFromParent();
 		SoldierInterfaceWidget->AddToViewport();
 		FP_ArmVecStart = FVector(-0.172258, 2.895133, -162.847717);
@@ -504,18 +510,8 @@ void ASoldier::SecondWeapon() { // pistol
 		currentRightHandWeapon = Cast<IBaseWeaponInterface>(FP_SecondaryGun->GetChildActor());
 		FP_SecondaryGun->SetVisibility(true);
 		FP_PrimaryGun->SetVisibility(false);
-		FP_SecondaryGun->GetChildrenComponents(true, GunChildComponents);
-
-		for (UStaticMeshComponent* &i : currentRightHandWeapon->GetWeaponCosmetics().CosmeticComponents) {
-			i->bOnlyOwnerSee = true;
-			i->SetCastShadow(false);
-		}
-		for (USceneComponent* component : GunChildComponents) {
-			if (USkeletalMeshComponent* componentMesh = Cast<USkeletalMeshComponent>(component)) {
-				TP_Gun->SetSkeletalMesh(componentMesh->SkeletalMesh);
-			}
-		}
-
+		TP_Gun->SetSkeletalMesh(currentRightHandWeapon->GetWeaponMeshObject());
+		SetSelectWeaponCosmetics();
 		SoldierInterfaceWidget->RemoveFromParent();
 		SoldierInterfaceWidget->AddToViewport();
 		FP_ArmVecStart = FVector(-10.664922, 10.874342, -173.447189);
@@ -537,4 +533,23 @@ void ASoldier::SecondWeapon() { // pistol
 void ASoldier::SoldierInterfaceWidgetSetHide() {
 	SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->SelectHideWeaponImages, 0, 1, EUMGSequencePlayMode::Forward);
 	bSoldierWidgetInterfaceSee = false;
+}
+
+void ASoldier::SetSelectWeaponCosmetics(){
+	currentRightHandWeapon->GetWeaponMesh()->GetChildrenComponents(true, GunChildComponents);
+	for (UStaticMeshComponent*& i : currentRightHandWeapon->GetWeaponCosmetics().CosmeticComponents) {
+		i->bOnlyOwnerSee = true;
+		i->SetCastShadow(false);
+	}
+	if (GunChildComponents.Num() != 0) {
+		for (USceneComponent* &i : GunChildComponents) {
+			if (UStaticMeshComponent* component = Cast<UStaticMeshComponent>(i)) {
+				if (component->GetName() == TP_SightMesh->GetName())
+					TP_SightMesh->SetStaticMesh(component->GetStaticMesh());
+
+				if (component->GetName() == TP_MuzzleMesh->GetName())
+					TP_MuzzleMesh->SetStaticMesh(component->GetStaticMesh());
+			}
+		}
+	}
 }

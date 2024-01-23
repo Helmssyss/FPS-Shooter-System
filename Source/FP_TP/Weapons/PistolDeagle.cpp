@@ -29,15 +29,15 @@ APistolDeagle::APistolDeagle(){
 	widgetComponent->SetRelativeScale3D(FVector(0.044720, 0.044720, 0.044720));
 	widgetComponent->SetVisibility(false);
 
-	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PistolDeagle_SightMesh"));
+	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SightMesh"));
 	sightMesh->SetupAttachment(weaponMesh, FName("Sight"));
 	sightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PistolDeagle_MuzzleMesh"));
+	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
 	muzzleMesh->SetupAttachment(weaponMesh, FName("Muzzle"));
 	muzzleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PistolDeagle_GripMesh"));
+	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GripMesh"));
 	gripMesh->SetupAttachment(weaponMesh, FName("Grip"));
 	gripMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

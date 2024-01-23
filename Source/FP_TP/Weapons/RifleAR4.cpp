@@ -32,15 +32,15 @@ ARifleAR4::ARifleAR4(){
 	widgetComponent->SetRelativeScale3D(FVector(0.044720, 0.044720, 0.044720));
 	widgetComponent->SetVisibility(false);
 
-	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_SightMesh"));
+	sightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SightMesh"));
 	sightMesh->SetupAttachment(weaponMesh, FName("Sight"));
 	sightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_MuzzleMesh"));
+	muzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
 	muzzleMesh->SetupAttachment(weaponMesh, FName("Muzzle"));
 	muzzleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AK47_GripMesh"));
+	gripMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GripMesh"));
 	gripMesh->SetupAttachment(weaponMesh, FName("Grip"));
 	gripMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

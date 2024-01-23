@@ -86,7 +86,6 @@ void AMainBaseLevel::SetWeaponSettings(TArray<USceneComponent*> &ChildComponents
 			componentRifleMesh->SetCastShadow(false);
 			componentRifleMesh->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
 			componentRifleMesh->bOnlyOwnerSee = true;
-			printf(FColor::Cyan, "component -> %s", *component->GetName());
 		}
 	}
 	spawnedSoldier->GetFPSecondaryGun()->GetChildrenComponents(false, ChildComponents);
@@ -95,7 +94,6 @@ void AMainBaseLevel::SetWeaponSettings(TArray<USceneComponent*> &ChildComponents
 			componentPistolMesh->SetCastShadow(false);
 			componentPistolMesh->GetOwner()->SetOwner(spawnedSoldier->GetFPArm()->GetOwner());
 			componentPistolMesh->bOnlyOwnerSee = true;
-			printf(FColor::Cyan, "component -> %s", *component->GetName());
 		}
 	}
 }
