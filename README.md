@@ -51,6 +51,13 @@
 
 <div align="center">
 
+Player Setup:
+
+ <img src="https://github.com/Helmssyss/FPS-Shooter-System/assets/84701901/1f361b51-29a5-431e-a3c3-ba7feddb9c47" width=25% height=25%>
+ <img src="https://github.com/Helmssyss/FPS-Shooter-System/assets/84701901/2d8b6b0a-1a1c-4fdc-8729-04e47fb3a09f" width=30% height=30%>
+ <img src="https://github.com/Helmssyss/FPS-Shooter-System/assets/84701901/c1f0ef56-4ae3-4229-86da-94193f61bd83" width=25% height=25%>
+
+---
 Weapon Sway:
 
 ![WeaponSway](https://github.com/Helmssyss/FPTP-Shooter-System/assets/84701901/64eac934-d455-4cea-a6a0-b6b5ab1fe439)
@@ -63,7 +70,7 @@ Weapon Switch:
 ---
 Weapon Cosmetic (Attachment System):
 
-![Weapon Cosmetic](https://github.com/Helmssyss/FPTP-Shooter-System/assets/84701901/260e7c47-dfce-4e5b-b287-a6c16ab3d2ab)
+![Weapon Cosmetic](https://github.com/Helmssyss/FPS-Shooter-System/assets/84701901/a95c4493-69fa-4d37-8b7c-faac8a89b159)
 
 ---
 Weapon Clipping:
