@@ -132,7 +132,7 @@ USoundBase* ARifleAK::GetWeaponFireSound(EWeaponMuzzleType MuzzleType) {
 			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle_FireSuppressor"));
 
 		case EWeaponMuzzleType::NORMAL:
-			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/AK47_FireSound"));
+			return LoadObject<USoundBase>(nullptr, TEXT("/Game/Weapons/FX/Sounds/Rifle/Wavs/RifleA_Fire_ST01"));
 		default:
 			return nullptr;
 	}

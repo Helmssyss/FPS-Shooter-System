@@ -165,8 +165,6 @@ class FP_TP_API ASoldier : public ACharacter{
 		bool bIsSecondWeapon;
 		bool bSoldierWidgetInterfaceSee;
 		bool bWeaponIsClipping;
-		uint8 shotBullet;
-		uint8 bulletCount;
 		IBaseWeaponInterface *currentRightHandWeapon;
 		ABaseMagazine* currentGetMagazineOwner;
 		FTimerHandle T_FP_ArmFireAnimationHandle;

@@ -408,9 +408,9 @@ void ASoldier::ShootFire() {
 			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			IBaseBulletInterface* spwnBullet = GetWorld()->SpawnActor<IBaseBulletInterface>(currentRightHandWeapon->GetWeaponBulletClass(), makeTransform, params);
 			if (spwnBullet) {
-				shotBullet = currentRightHandWeapon->GetCurrentAmmo();
-				shotBullet--;
-				currentRightHandWeapon->SetCurrentAmmo(shotBullet);
+				short bullet = currentRightHandWeapon->GetCurrentAmmo();
+				bullet--;
+				currentRightHandWeapon->SetCurrentAmmo(bullet);
 				const FTransform muzzleSocketTransform(currentRightHandWeapon->GetWeaponMesh()->GetSocketTransform(FName("Muzzle")));
 				FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPFireAnimation());
 				GetMesh()->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInTPFireAnimMontage());
@@ -420,7 +420,6 @@ void ASoldier::ShootFire() {
 				currentRightHandWeapon->PlayWeaponFireAnimation();
 				TP_Gun->PlayAnimation(currentRightHandWeapon->GetWeaponFireAnimation(), false);
 				SoldierInterfaceWidget->PlayAnimation(SoldierInterfaceWidget->FireSpreadCrossHair);
-				bulletCount++;
 			}
 			//DrawDebugBox(GetWorld(), ResultHit.ImpactPoint, FVector(3, 3, 3), FColor::Red, false, 3.f);
 		}else {
@@ -438,10 +437,7 @@ void ASoldier::OnFireReleased(){
 
 void ASoldier::Reload() {
 	if (currentRightHandWeapon) {
-		printf(FColor::Yellow, "shotBullet - bulletCount = %i", shotBullet - bulletCount);
-		if (currentRightHandWeapon->GetTotalAmmo() != 0 && shotBullet - bulletCount != 0) {
-			shotBullet = 0;
-			bulletCount = 0;
+		if (currentRightHandWeapon->GetTotalAmmo() != 0) {
 			bReloading = true;
 			printf(FColor::Yellow, "bReloading -> %i", bReloading);
 			FP_Arms->GetAnimInstance()->Montage_Play(currentRightHandWeapon->GetWeaponInFPReloadAnimation());

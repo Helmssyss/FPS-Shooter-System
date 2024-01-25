@@ -46,6 +46,6 @@ void USoldierAnimInstance::WeaponSway(ASoldier* soldier){
     RightHandRotator = FRotator(MouseYInterp, MouseXInterp, MouseYInterp);
 
     if (soldier->GetCurrentFPRightHandWeapon())
-        leftFPHandSocketTransform = soldier->GetCurrentFPRightHandWeapon()->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"));
-        leftTPHandSocketTransform = soldier->GetTPGunMesh()->GetSocketTransform(FName("LeftHandSocket"));
+        leftFPHandSocketTransform = soldier->GetCurrentFPRightHandWeapon()->GetWeaponMesh()->GetSocketTransform(FName("FPLeftHandSocket"));
+        leftTPHandSocketTransform = soldier->GetTPGunMesh()->GetSocketTransform(FName("TPLeftHandSocket"));
 }
