@@ -36,10 +36,7 @@
   
   &check; Weapon Switch
 
----
-### TO:DO
-
- &#x2610; Character Leaning  
+  &check; Character Leaning
 
 ---
 ### Note:
