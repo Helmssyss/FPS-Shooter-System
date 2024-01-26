@@ -24,7 +24,7 @@
   
   &check; Reload System
   
-  &check; Fire Mode (Semi-Auto, Auto, Single)
+  &check; Shooting Mode (Semi-Auto, Auto, Single)
   
   &check; Dynamic Crosshair
   
