@@ -8,7 +8,7 @@
 ### Current Abilities:
   &check; Third Person Model
   
-  &check; Spesific animations for Third Person Model
+  &check; Specific animations for Third Person Model
   
   &check; First Person Model
   
