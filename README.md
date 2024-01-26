@@ -5,8 +5,6 @@
   
 </div>
 
-`Content` file will be added.
-
 ### Current Abilities:
   &check; Third Person Model
   
@@ -32,16 +30,17 @@
   
   &check; Weapon Spread
   
----
-### TO:DO
   &check; Weapon Clipping
   
-  &#x2610; Character Leaning
-  
   &check; Weapon Sway
-
-  &check; Weapon Switch
   
+  &check; Weapon Switch
+
+---
+### TO:DO
+
+ &#x2610; Character Leaning  
+
 ---
 ### Note:
 -  _What distinguishes this system from my other repos is that I focus entirely on C++ and use Timeline._
