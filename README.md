@@ -73,6 +73,11 @@ Weapon Clipping:
 
 ![WeaponClip](https://github.com/Helmssyss/FPTP-Shooter-System/assets/84701901/3dbc44a1-5b8d-42b1-8020-1213356a2540)
 
+---
+Character Leaning:
+
+![Weapon leaning](https://github.com/Helmssyss/FPS-Shooter-System/assets/84701901/c3330915-0f7c-4d81-9e74-148d40e75d22)
+
 </div>
 
   # I was inspired by while writing this system is BattleField1.
