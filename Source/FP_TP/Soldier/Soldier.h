@@ -43,6 +43,9 @@ class FP_TP_API ASoldier : public ACharacter{
 		FORCEINLINE bool GetCurrentWeaponIsClipping() const { return bWeaponIsClipping; }
 		FORCEINLINE UStaticMeshComponent* GetTPGunSightMesh() const { return TP_SightMesh; }
 		FORCEINLINE UStaticMeshComponent* GetTPGunMuzzleMesh() const { return TP_MuzzleMesh; }
+		FORCEINLINE bool GetLeanLeftState() const { return bIsLeanLeft; }
+		FORCEINLINE bool GetLeanRightState() const { return bIsLeanRight; }
+		FORCEINLINE UCameraComponent* GetCameraComponent() const { return FP_Camera; }
 		void SetSelectWeaponCosmetics();
 
 	private:
@@ -71,6 +74,9 @@ class FP_TP_API ASoldier : public ACharacter{
 		void WeaponCosmeticAnimation();
 		void FirstWeapon();
 		void SecondWeapon();
+		void LeanLeft();
+		void LeanRight();
+		void LeanEnd();
 		FORCEINLINE FVector SelectVector(const FVector &A, const FVector &B, const bool &bSelectA) const { return bSelectA ? A : B; }
 		FORCEINLINE FRotator FindLookAtRotation(const FVector &Start, const FVector &Target) const { return FRotationMatrix::MakeFromX(Target - Start).Rotator(); }
 		FORCEINLINE FRotator DeltaRotator(const FRotator& A, const FRotator& B) const { return (A - B).GetNormalized(); }
@@ -123,6 +129,12 @@ class FP_TP_API ASoldier : public ACharacter{
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* TP_SightMesh;
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		USkeletalMeshComponent* TP_PrimaryGunCase;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		USkeletalMeshComponent* TP_SecondaryGunCase;
+
 		UPROPERTY()
 		USoldierInterfaceWidget *SoldierInterfaceWidget;
 
@@ -165,6 +177,8 @@ class FP_TP_API ASoldier : public ACharacter{
 		bool bIsSecondWeapon;
 		bool bSoldierWidgetInterfaceSee;
 		bool bWeaponIsClipping;
+		bool bIsLeanRight;
+		bool bIsLeanLeft;
 		IBaseWeaponInterface *currentRightHandWeapon;
 		ABaseMagazine* currentGetMagazineOwner;
 		FTimerHandle T_FP_ArmFireAnimationHandle;

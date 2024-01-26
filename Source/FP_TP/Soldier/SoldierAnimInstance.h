@@ -48,15 +48,25 @@ class FP_TP_API USoldierAnimInstance : public UAnimInstance{
 		UPROPERTY(BlueprintReadOnly, Category = Soldier)
 		float soldierWeaponClipDistanceCurrent;
 
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		float soldierLeanCurrent;
+
+		UPROPERTY(BlueprintReadOnly, Category = Soldier)
+		float soldierLeanLast;
+
 	private:
 		GENERATED_BODY()
 		virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 		FRotator GetLookRotation(ASoldier* soldier);
 		FRotator InverseTransformRotation(const FTransform& Transform, FRotator Rotation);
 		void WeaponSway(ASoldier* soldier);
+		void SoldierLean(ASoldier* soldier);
 
 		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		FRotator soldierHeadRotation;
+
+		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
+		FRotator soldierLeanRotation;
 
 		UPROPERTY(BlueprintReadonly, Category = Soldier, meta = (AllowPrivateAccess = "true"))
 		FTransform leftFPHandSocketTransform;

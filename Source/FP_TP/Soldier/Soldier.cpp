@@ -85,6 +85,12 @@ ASoldier::ASoldier(){
 	TP_MuzzleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MuzzleMesh"));
 	TP_MuzzleMesh->SetupAttachment(TP_Gun, FName("Muzzle"));
 
+	TP_PrimaryGunCase = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_PrimaryGunCase"));
+	TP_PrimaryGunCase->SetupAttachment(GetMesh(), FName("WeaponBackSocket"));
+
+	TP_SecondaryGunCase = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_SecondaryGunCase"));
+	TP_SecondaryGunCase->SetupAttachment(GetMesh(), FName("WeaponPistolSocket"));
+
 	GetMesh()->CastShadow = true;
 	GetMesh()->bOwnerNoSee = true;
 	GetMesh()->SetCastHiddenShadow(true);
@@ -172,12 +178,31 @@ void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){
 		PlayerInputComponent->BindAction("WeaponCustomize", IE_Pressed, this, &ASoldier::WeaponCosmeticAnimation);
 		PlayerInputComponent->BindAction("FirstWeapon - Rifle", IE_Pressed, this, &ASoldier::FirstWeapon);
 		PlayerInputComponent->BindAction("SecondWeapon - Pistol", IE_Pressed, this, &ASoldier::SecondWeapon);
+		PlayerInputComponent->BindAction("Lean - Left", IE_Pressed, this, &ASoldier::LeanLeft);
+		PlayerInputComponent->BindAction("Lean - Left", IE_Released, this, &ASoldier::LeanEnd);
+		PlayerInputComponent->BindAction("Lean - Right", IE_Pressed, this, &ASoldier::LeanRight);
+		PlayerInputComponent->BindAction("Lean - Right", IE_Released, this, &ASoldier::LeanEnd);
 
 		PlayerInputComponent->BindAxis("MoveFB", this, &ASoldier::MoveFB);
 		PlayerInputComponent->BindAxis("MoveRL", this, &ASoldier::MoveRL);
 		PlayerInputComponent->BindAxis("TurnRL", this, &ASoldier::TurnRL);
 		PlayerInputComponent->BindAxis("LookUp", this, &ASoldier::LookUp);
 	}
+}
+
+void ASoldier::LeanLeft() {
+	bIsLeanRight = false;
+	bIsLeanLeft = true;
+}
+
+void ASoldier::LeanEnd() {
+	bIsLeanRight = false;
+	bIsLeanLeft = false;
+}
+
+void ASoldier::LeanRight() {
+	bIsLeanRight = true;
+	bIsLeanLeft = false;
 }
 
 void ASoldier::MoveFB(float Value){
@@ -262,8 +287,8 @@ void ASoldier::RecoilInterpolate(float DeltaTime){
 		}
 		RecoilTimeline.TickTimeline(DeltaTime);
 		RecoilEndRotation = FP_Camera->GetComponentRotation();
-		const float InterpolatePitch = FMath::FInterpTo(RecoilStartRotation.Pitch, RecoilEndRotation.Pitch, DeltaTime, 35);
-		GetController()->SetControlRotation(FRotator(InterpolatePitch, RecoilEndRotation.Yaw, RecoilEndRotation.Roll));
+		const FRotator InterpolateRotator = FMath::RInterpTo(RecoilStartRotation, RecoilEndRotation, DeltaTime, 35);
+		GetController()->SetControlRotation(InterpolateRotator);
 	}
 }
 
@@ -309,11 +334,9 @@ void ASoldier::WeaponClipping() {
 		const FVector end = start + distance;
 
 		const bool isHit = GetWorld()->LineTraceSingleByChannel(ClipHit, start, end, ECollisionChannel::ECC_Camera, QueryParams);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 4);
 		if (isHit) {
 			bWeaponIsClipping = true;
 			clipDistance = FVector::Distance(ClipHit.Location, start) / length;
-			//DrawDebugBox(GetWorld(), ClipHit.ImpactPoint, FVector(3, 3, 3), FColor::Green, false, 0.02f);
 		}
 		else {
 			clipDistance = 1.f;
@@ -473,6 +496,8 @@ void ASoldier::WeaponCosmeticAnimation(){
 void ASoldier::FirstWeapon() { // rifle
 	if (bIsSecondWeapon) {
 		bIsSecondWeapon = false;
+		TP_PrimaryGunCase->SetSkeletalMesh(nullptr);
+		TP_SecondaryGunCase->SetSkeletalMesh(TP_Gun->SkeletalMesh);
 		FP_Arms->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_RifleEquip")));
 		GetMesh()->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_SwitchWeapon")));
 		currentRightHandWeapon = Cast<IBaseWeaponInterface>(FP_PrimaryGun->GetChildActor());
@@ -501,6 +526,8 @@ void ASoldier::FirstWeapon() { // rifle
 void ASoldier::SecondWeapon() { // pistol
 	if (!bIsSecondWeapon) {
 		bIsSecondWeapon = true;
+		TP_SecondaryGunCase->SetSkeletalMesh(nullptr);
+		TP_PrimaryGunCase->SetSkeletalMesh(TP_Gun->SkeletalMesh);
 		FP_Arms->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/FirstPerson/Animation/FP_PistolEquip")));
 		GetMesh()->GetAnimInstance()->Montage_Play(LoadObject<UAnimMontage>(nullptr, TEXT("/Game/Character/ThirdPerson/Animation/TP_SwitchWeapon")));
 		currentRightHandWeapon = Cast<IBaseWeaponInterface>(FP_SecondaryGun->GetChildActor());

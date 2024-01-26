@@ -1,7 +1,10 @@
 #include "SoldierAnimInstance.h"
 #include "../Soldier/Soldier.h"
 #include "../Weapons/BaseWeaponInterface.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+#define printf(color,format,...) GEngine->AddOnScreenDebugMessage(-1, 3, color, FString::Printf(TEXT(format), ##__VA_ARGS__));
 
 void USoldierAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
     Super::NativeUpdateAnimation(DeltaSeconds);
@@ -21,6 +24,7 @@ void USoldierAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
         soldierWeaponClipDistanceLast = TryPawn->GetCurrentWeaponClipDistance();
         soldierWeaponClipDistanceCurrent = FMath::FInterpTo(soldierWeaponClipDistanceLast, soldierWeaponClipDistanceCurrent, GetWorld()->GetDeltaSeconds(), 30);
         WeaponSway(TryPawn);
+        SoldierLean(TryPawn);
     }
 }
 
@@ -48,4 +52,20 @@ void USoldierAnimInstance::WeaponSway(ASoldier* soldier){
     if (soldier->GetCurrentFPRightHandWeapon())
         leftFPHandSocketTransform = soldier->GetCurrentFPRightHandWeapon()->GetWeaponMesh()->GetSocketTransform(FName("FPLeftHandSocket"));
         leftTPHandSocketTransform = soldier->GetTPGunMesh()->GetSocketTransform(FName("TPLeftHandSocket"));
+}
+
+void USoldierAnimInstance::SoldierLean(ASoldier* soldier){
+    if (soldier->GetLeanLeftState()) {
+        soldierLeanLast = -1.f;
+    } else if(soldier->GetLeanRightState()){
+        soldierLeanLast = 1.f;
+    } else {
+        soldierLeanLast = 0.f;
+    }
+    const float LeanInterp = FMath::FInterpTo(soldierLeanCurrent, soldierLeanLast, GetWorld()->GetDeltaSeconds(), 10);
+    soldierLeanCurrent = LeanInterp;
+    soldierLeanRotation.Pitch = soldierLeanCurrent * 12.f;
+    const FRotator soldierCameraRotation = soldier->GetCameraComponent()->GetComponentRotation();
+    printf(FColor::Yellow, "soldierLeanRotation.Pitch = %f", soldierLeanRotation.Pitch);
+    soldier->GetCameraComponent()->SetWorldRotation(FRotator(soldierCameraRotation.Pitch, soldierCameraRotation.Yaw, soldierLeanRotation.Pitch));
 }
