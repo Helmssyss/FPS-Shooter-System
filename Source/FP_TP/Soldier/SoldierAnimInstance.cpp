@@ -49,9 +49,10 @@ void USoldierAnimInstance::WeaponSway(ASoldier* soldier){
     const float MouseYInterp = FMath::FInterpTo(RightHandRotator.Pitch, MouseY, GetWorld()->GetDeltaSeconds(), 3);
     RightHandRotator = FRotator(MouseYInterp, MouseXInterp, MouseYInterp);
 
-    if (soldier->GetCurrentFPRightHandWeapon())
+    if (soldier->GetCurrentFPRightHandWeapon()) {
         leftFPHandSocketTransform = soldier->GetCurrentFPRightHandWeapon()->GetWeaponMesh()->GetSocketTransform(FName("FPLeftHandSocket"));
         leftTPHandSocketTransform = soldier->GetTPGunMesh()->GetSocketTransform(FName("TPLeftHandSocket"));
+    }
 }
 
 void USoldierAnimInstance::SoldierLean(ASoldier* soldier){
@@ -64,8 +65,7 @@ void USoldierAnimInstance::SoldierLean(ASoldier* soldier){
     }
     const float LeanInterp = FMath::FInterpTo(soldierLeanCurrent, soldierLeanLast, GetWorld()->GetDeltaSeconds(), 10);
     soldierLeanCurrent = LeanInterp;
-    soldierLeanRotation.Pitch = soldierLeanCurrent * 12.f;
+    soldierLeanRotation.Pitch = soldierLeanCurrent * 20.f;
     const FRotator soldierCameraRotation = soldier->GetCameraComponent()->GetComponentRotation();
-    printf(FColor::Yellow, "soldierLeanRotation.Pitch = %f", soldierLeanRotation.Pitch);
     soldier->GetCameraComponent()->SetWorldRotation(FRotator(soldierCameraRotation.Pitch, soldierCameraRotation.Yaw, soldierLeanRotation.Pitch));
 }

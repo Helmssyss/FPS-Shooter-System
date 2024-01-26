@@ -32,12 +32,6 @@ class FP_TP_API UMainMenuWidget : public UUserWidget{
 		UFUNCTION()
 		void AK47Select();
 
-		//UFUNCTION()
-		//void Test();
-
-		//UFUNCTION()
-		//void SelectReconClass();
-
 		UPROPERTY(meta = (BindWidget))
 		UButton *StartButton;
 
@@ -55,12 +49,6 @@ class FP_TP_API UMainMenuWidget : public UUserWidget{
 
 		UPROPERTY(meta = (BindWidget))
 		UButton *AK47_Select;
-
-		//UPROPERTY(meta = (BindWidget))
-		//UCheckBox *AR4_SelectCheckBox;
-		//
-		//UPROPERTY(meta = (BindWidget))
-		//UCheckBox *AK47_SelectCheckBox;
 
 		ESoldierSelectWepon selectWeaponClass;
 		ESoldierClasses selectSoldierClass;

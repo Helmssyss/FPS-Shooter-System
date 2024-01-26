@@ -156,6 +156,9 @@ void ASoldier::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	if (currentRightHandWeapon) {
 		ADS_Timeline.TickTimeline(DeltaTime);
+		if (FMath::Abs(yawInput) > 0 || FMath::Abs(pitchInput) > 0)
+			RecoilStartRotation = FP_Camera->GetComponentRotation();
+
 		if (currentRightHandWeapon->GetCurrentAmmo() != 0) {
 			RecoilInterpolate(DeltaTime);
 		}
@@ -191,18 +194,27 @@ void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){
 }
 
 void ASoldier::LeanLeft() {
-	bIsLeanRight = false;
-	bIsLeanLeft = true;
+	if (bAimDownSight) {
+		RecoilStartRotation = FP_Camera->GetComponentRotation();
+		bIsLeanRight = false;
+		bIsLeanLeft = true;
+	}
 }
 
 void ASoldier::LeanEnd() {
-	bIsLeanRight = false;
-	bIsLeanLeft = false;
+	if (bAimDownSight) {
+		RecoilStartRotation = FP_Camera->GetComponentRotation();
+		bIsLeanRight = false;
+		bIsLeanLeft = false;
+	}
 }
 
 void ASoldier::LeanRight() {
-	bIsLeanRight = true;
-	bIsLeanLeft = false;
+	if (bAimDownSight) {
+		RecoilStartRotation = FP_Camera->GetComponentRotation();
+		bIsLeanRight = true;
+		bIsLeanLeft = false;
+	}
 }
 
 void ASoldier::MoveFB(float Value){
@@ -257,6 +269,11 @@ void ASoldier::AimDownSightStart() {
 }
 
 void ASoldier::AimDownSightReverse() {
+	if (bIsLeanRight || bIsLeanLeft) {
+		RecoilStartRotation = FP_Camera->GetComponentRotation();
+		bIsLeanLeft = false;
+		bIsLeanRight = false;
+	}
 	SoldierInterfaceWidget->SetVisibleCrosshair(false);
 	ADS_Timeline.Reverse();
 	bAimDownSight = false;
@@ -271,16 +288,10 @@ void ASoldier::RecoilReverse(){
 }
 
 void ASoldier::RecoilInterpolate(float DeltaTime){
-	if (RecoilTimeline.IsPlaying()) {
+	if (RecoilTimeline.IsPlaying())
 		RecoilTimeline.TickTimeline(DeltaTime);
-		if (FMath::Abs(yawInput) > 0 || FMath::Abs(pitchInput) > 0)
-			RecoilStartRotation = FP_Camera->GetComponentRotation();
-	}
+	
 	if (RecoilTimeline.IsReversing()) {
-		//if (GetCharacterMovement()->Velocity != FVector::ZeroVector) {
-		//	RecoilTimeline.Stop();
-		//	return;
-		//}
 		if (FMath::Abs(yawInput) > 0 || FMath::Abs(pitchInput) > 0) {
 			RecoilTimeline.Stop();
 			return;
